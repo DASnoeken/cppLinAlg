@@ -4,8 +4,9 @@
 class Matrix
 {
 public:
-	Matrix(int n, int m, std::string input);
+	Matrix(std::string input);
 	~Matrix();
+	int* inputToDim(std::string in);
 	double returnElement(int i, int j);
 	void printElements();
 private:

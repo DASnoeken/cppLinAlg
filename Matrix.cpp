@@ -5,14 +5,15 @@
 #include <string>
 #include <iomanip>
 
-Matrix::Matrix(int n, int m, std::string input)
+Matrix::Matrix(std::string input)
 {
-	this->n_rows = n;
-	this->n_columns = m;
+	int* dim = inputToDim(input);
+	this->n_rows = dim[0];
+	this->n_columns = dim[1];
 	std::vector<double> row;
 	std::string delimiter = ",";
-	for (int j = 0; j < n; j++) {
-		for (int i = 0; i < m; i++) {
+	for (int j = 0; j < n_rows; j++) {
+		for (int i = 0; i < n_columns; i++) {
 			if(input.find(delimiter)<input.find(";")){
 				double val = std::stod(input.substr(0,input.find(delimiter)));
 				input.erase(0, input.find(delimiter) + 1);
@@ -43,6 +44,31 @@ void Matrix::printElements() {
 
 Matrix::~Matrix()
 {
+	
+}
+
+int* Matrix::inputToDim(std::string in)
+{
+		static int out[2];
+		int nrows = 1;
+		int ncol = 1;
+		int colcount = 0;
+		bool cols = true;
+		for (int i = 0; i < in.size(); i++) {
+			if (in.at(i) == ';') {
+				nrows++;
+				if (cols) {
+					ncol += colcount;
+				}
+				cols = false;
+			}
+			else if (in.at(i) == ',') {
+				colcount++;
+			}
+		}
+		out[0] = nrows;
+		out[1] = ncol;
+		return out;
 	
 }
 
