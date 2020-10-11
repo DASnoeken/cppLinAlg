@@ -10,9 +10,10 @@ int main()
     std::unique_ptr<Matrix> m = std::make_unique<Matrix>(input);
     m->printElements();
     try {
-        std::cout << m->returnElement(0, 0) << "  " << m->returnElement(0, 1) << "  " << m->returnElement(2,1) << std::endl;
+        std::cout << m->returnElement(0, 0) << "  " << m->returnElement(0, 1) << "  " << m->returnElement(1,2) << std::endl;
+        m->setElement(1, 1, 23.0);
     }
     catch (MatrixException me) {
-        std::cout << "Exception caught!" << std::endl;
+        std::cout << "\033[1;31mERROR!\033[0m " << "Exception caught!" << std::endl;
     }
 }

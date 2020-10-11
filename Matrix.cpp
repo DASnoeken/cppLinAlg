@@ -42,6 +42,20 @@ void Matrix::printElements() {
 	std::cout << std::endl;
 }
 
+void Matrix::setElement(int i, int j, double val)
+{
+	if (i >= this->n_rows || j >= this->n_columns) {
+		MatrixException me("Index out of bounds!");
+		std::cout << me.toString() << "  " << me.getWhat() << " at Matrix::setElement(" << i << ", " << j << ", " << val << ")" << std::endl;
+		throw me;
+	}
+	//std::cout << "Before: " << std::endl;
+	//this->printElements();
+	this->rows.at(this->n_rows - 1).at(j + i * this->n_columns) = val;
+	//std::cout << "After: " << std::endl;
+	//this->printElements();
+}
+
 Matrix::~Matrix()
 {
 	
@@ -76,7 +90,7 @@ double Matrix::returnElement(int i, int j)
 {
 	if (i >= this->n_rows || j >= this->n_columns) {
 		MatrixException me("Index out of bounds!");
-		std::cout << me.toString() << "  " << me.getWhat() << " at Matrix::returnElement(int i, int j)" << std::endl;
+		std::cout << me.toString() << "  " << me.getWhat() << " at Matrix::returnElement(" << i << ", " << j << ")" << std::endl;
 		throw me;
 	}
 	std::vector<double> vd = this->rows.at(this->n_rows - 1);
