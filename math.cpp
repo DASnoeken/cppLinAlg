@@ -14,7 +14,6 @@ int main()
     m2.printElements();
     try {
         std::cout << m->returnElement(0, 0) << "  " << m->returnElement(0, 1) << "  " << m->returnElement(1,2) << std::endl;
-        //m->setElement(1, 1, 23.0);
         std::cout << "multiply: \n";
         Matrix m3 = m->multiply(m2);
         m3.printElements();
@@ -27,6 +26,9 @@ int main()
         std::cout << "Transpose: \n";
         Matrix m6 = m->transpose();
         m6.printElements();
+        std::cout << "Scalar: \n";
+        Matrix m7 = m->scalar(2.0);
+        m7.printElements();
     }
     catch (MatrixException me) {
         std::cout << "\033[1;31mERROR!\033[0m " << "Exception caught!" << std::endl;

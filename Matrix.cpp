@@ -133,6 +133,17 @@ const Matrix Matrix::transpose()
 	return mAns;
 }
 
+const Matrix Matrix::scalar(double scalar)
+{
+	Matrix m(this->getN_rows(), this->getN_columns());
+	for (int i = 0; i < this->getN_rows(); i++) {
+		for (int j = 0; j < this->getN_columns(); j++) {
+			m.setElement(i, j, scalar * this->returnElement(i, j));
+		}
+	}
+	return m;
+}
+
 const int Matrix::getN_rows() const
 {
 	return n_rows;
