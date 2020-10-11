@@ -14,6 +14,7 @@ public:
 	const Matrix multiply(const Matrix& m);
 	const Matrix add(const Matrix& m);
 	const Matrix subtract(const Matrix& m);
+	const Matrix transpose();
 
 	const int getN_rows() const;
 	const int getN_columns() const;

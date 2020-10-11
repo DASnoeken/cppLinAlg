@@ -24,6 +24,9 @@ int main()
         std::cout << "Subtraction: \n";
         Matrix m5 = m->subtract(m2);
         m5.printElements();
+        std::cout << "Transpose: \n";
+        Matrix m6 = m->transpose();
+        m6.printElements();
     }
     catch (MatrixException me) {
         std::cout << "\033[1;31mERROR!\033[0m " << "Exception caught!" << std::endl;

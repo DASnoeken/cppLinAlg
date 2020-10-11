@@ -122,6 +122,17 @@ const Matrix Matrix::subtract(const Matrix& m)
 	return mAns;
 }
 
+const Matrix Matrix::transpose()
+{
+	Matrix mAns(this->getN_rows(), this->getN_columns());
+	for (int i = 0; i < this->getN_rows(); i++) {
+		for (int j = 0; j < this->getN_columns(); j++) {
+			mAns.setElement(i, j, this->returnElement(j, i));
+		}
+	}
+	return mAns;
+}
+
 const int Matrix::getN_rows() const
 {
 	return n_rows;
