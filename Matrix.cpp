@@ -69,7 +69,7 @@ void Matrix::setElement(int i, int j, double val)
 	//this->printElements();
 }
 
-Matrix Matrix::multiply(const Matrix& m)
+const Matrix Matrix::multiply(const Matrix& m)
 {
 	if (this->getN_columns() != m.getN_rows()) {
 		MatrixException me("Inner dimension mismatch!");
@@ -87,7 +87,38 @@ Matrix Matrix::multiply(const Matrix& m)
 			value = 0.0;
 		}
 	}
-	std::cout << "rows: " << mAns.getN_rows() << " columns: " << mAns.getN_columns() << std::endl;
+	return mAns;
+}
+
+const Matrix Matrix::add(const Matrix& m)
+{
+	if (this->getN_rows() != m.getN_rows() || this->getN_columns() != m.getN_columns()) {
+		MatrixException me("Dimension mismatch!");
+		std::cout << me.toString() << " " << me.getWhat() << " at Matrix::add(" << &m << ")" << std::endl;
+		throw me;
+	}
+	Matrix mAns(this->getN_rows(), this->getN_columns());
+	for (int i = 0; i < this->getN_rows(); i++) {
+		for (int j = 0; j < this->getN_columns(); j++) {
+			mAns.setElement(i, j, this->returnElement(i, j) + m.returnElement(i, j));
+		}
+	}
+	return mAns;
+}
+
+const Matrix Matrix::subtract(const Matrix& m)
+{
+	if (this->getN_rows() != m.getN_rows() || this->getN_columns() != m.getN_columns()) {
+		MatrixException me("Dimension mismatch!");
+		std::cout << me.toString() << " " << me.getWhat() << " at Matrix::subtract(" << &m << ")" << std::endl;
+		throw me;
+	}
+	Matrix mAns(this->getN_rows(), this->getN_columns());
+	for (int i = 0; i < this->getN_rows(); i++) {
+		for (int j = 0; j < this->getN_columns(); j++) {
+			mAns.setElement(i, j, this->returnElement(i, j) - m.returnElement(i, j));
+		}
+	}
 	return mAns;
 }
 

@@ -11,7 +11,9 @@ public:
 	const double returnElement(int i, int j) const;
 	void printElements();
 	void setElement(int i, int j, double val);
-	Matrix multiply(const Matrix& m);
+	const Matrix multiply(const Matrix& m);
+	const Matrix add(const Matrix& m);
+	const Matrix subtract(const Matrix& m);
 
 	const int getN_rows() const;
 	const int getN_columns() const;

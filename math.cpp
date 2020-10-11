@@ -15,8 +15,15 @@ int main()
     try {
         std::cout << m->returnElement(0, 0) << "  " << m->returnElement(0, 1) << "  " << m->returnElement(1,2) << std::endl;
         //m->setElement(1, 1, 23.0);
+        std::cout << "multiply: \n";
         Matrix m3 = m->multiply(m2);
         m3.printElements();
+        std::cout << "Addition: \n";
+        Matrix m4 = m->add(m2);
+        m4.printElements();
+        std::cout << "Subtraction: \n";
+        Matrix m5 = m->subtract(m2);
+        m5.printElements();
     }
     catch (MatrixException me) {
         std::cout << "\033[1;31mERROR!\033[0m " << "Exception caught!" << std::endl;
