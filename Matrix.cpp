@@ -208,6 +208,70 @@ const double Matrix::det()
 	return m.getRrMult() * diagProd;
 }
 
+const Matrix Matrix::operator+(const Matrix& m)
+{
+	if (this->getN_rows() != m.getN_rows() || this->getN_columns() != m.getN_columns()) {
+		MatrixException me("Dimension mismatch!");
+		std::cout << me.toString() << " " << me.getWhat() << " at Matrix::add(" << &m << ")" << std::endl;
+		throw me;
+	}
+	Matrix mAns(this->getN_rows(), this->getN_columns());
+	for (int i = 0; i < this->getN_rows(); i++) {
+		for (int j = 0; j < this->getN_columns(); j++) {
+			mAns.setElement(i, j, this->getElement(i, j) + m.getElement(i, j));
+		}
+	}
+	return mAns;
+}
+
+const Matrix Matrix::operator-(const Matrix& m)
+{
+	if (this->getN_rows() != m.getN_rows() || this->getN_columns() != m.getN_columns()) {
+		MatrixException me("Dimension mismatch!");
+		std::cout << me.toString() << " " << me.getWhat() << " at Matrix::subtract(" << &m << ")" << std::endl;
+		throw me;
+	}
+	Matrix mAns(this->getN_rows(), this->getN_columns());
+	for (int i = 0; i < this->getN_rows(); i++) {
+		for (int j = 0; j < this->getN_columns(); j++) {
+			mAns.setElement(i, j, this->getElement(i, j) - m.getElement(i, j));
+		}
+	}
+	return mAns;
+}
+
+const Matrix Matrix::operator*(const Matrix& m)
+{
+	if (this->getN_columns() != m.getN_rows()) {
+		MatrixException me("Inner dimension mismatch!");
+		std::cout << me.toString() << " " << me.getWhat() << " at Matrix::multiply(" << &m << ")" << std::endl;
+		throw me;
+	}
+	Matrix mAns(this->getN_rows(), m.getN_columns());
+	double value = 0.0;
+	for (int i = 0; i < mAns.getN_rows(); i++) {
+		for (int j = 0; j < mAns.getN_columns(); j++) {
+			for (int k = 0; k < this->getN_columns(); k++) {
+				value += this->getElement(i, k) * m.getElement(k, j);
+			}
+			mAns.setElement(i, j, value);
+			value = 0.0;
+		}
+	}
+	return mAns;
+}
+
+const Matrix Matrix::operator*(const double& scalar)
+{
+	Matrix m(this->getN_rows(), this->getN_columns());
+	for (int i = 0; i < this->getN_rows(); i++) {
+		for (int j = 0; j < this->getN_columns(); j++) {
+			m.setElement(i, j, scalar * this->getElement(i, j));
+		}
+	}
+	return m;
+}
+
 const int Matrix::getN_rows() const
 {
 	return n_rows;

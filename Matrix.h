@@ -20,6 +20,10 @@ public:
 	const Matrix scalar(const double& scalar);
 	const Matrix REF();
 	const double det();
+	const Matrix operator+(const Matrix& m);
+	const Matrix operator-(const Matrix& m);
+	const Matrix operator*(const Matrix& m);
+	const Matrix operator*(const double& scalar);
 
 	const int getN_rows() const;
 	const int getN_columns() const;
