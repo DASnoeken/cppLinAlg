@@ -34,9 +34,22 @@ Matrix::Matrix(int i, int j)
 	this->n_rows = i;
 	this->n_columns = j;
 	std::vector<double> row;
-	for (int j = 0; j < n_rows; j++) {
-		for (int i = 0; i < n_columns; i++) {
+	for (int i = 0; i < this->n_rows; i++) {
+		for (int j = 0; j < this->n_columns; j++) {
 			row.push_back(0.0);
+		}
+		this->rows.push_back(row);
+	}
+}
+
+Matrix::Matrix(const Matrix& m_old)	//copy ctor
+{
+	this->n_rows = m_old.getN_rows();
+	this->n_columns = m_old.getN_columns();
+	std::vector<double> row;
+	for (int i = 0; i < this->n_rows; i++) {
+		for (int j = 0; j < this->n_columns; j++) {
+			row.push_back(m_old.getElement(i,j));
 		}
 		this->rows.push_back(row);
 	}
@@ -47,7 +60,7 @@ void Matrix::printElements() {
 	std::vector<double>::iterator iter = vd.begin();
 	while (iter != vd.end()) {
 		for (int j = 0; j < this->n_columns; j++) {
-			std::cout << *iter << " ";
+			std::cout << std::left << std::setw(4) << *iter << " ";
 			++iter;
 		}
 		std::cout << "\n";
@@ -62,11 +75,7 @@ void Matrix::setElement(int i, int j, double val)
 		std::cout << me.toString() << "  " << me.getWhat() << " at Matrix::setElement(" << i << ", " << j << ", " << val << ")" << std::endl;
 		throw me;
 	}
-	//std::cout << "Before: " << std::endl;
-	//this->printElements();
 	this->rows.at(this->n_rows - 1).at(j + i * this->n_columns) = val;
-	//std::cout << "After: " << std::endl;
-	//this->printElements();
 }
 
 const Matrix Matrix::multiply(const Matrix& m)
@@ -81,7 +90,7 @@ const Matrix Matrix::multiply(const Matrix& m)
 	for (int i = 0; i < mAns.getN_rows(); i++) {
 		for (int j = 0; j < mAns.getN_columns(); j++) {
 			for (int k = 0; k < this->getN_columns(); k++) {
-				value += this->returnElement(i, k) * m.returnElement(k, j);
+				value += this->getElement(i, k) * m.getElement(k, j);
 			}
 			mAns.setElement(i, j, value);
 			value = 0.0;
@@ -100,7 +109,7 @@ const Matrix Matrix::add(const Matrix& m)
 	Matrix mAns(this->getN_rows(), this->getN_columns());
 	for (int i = 0; i < this->getN_rows(); i++) {
 		for (int j = 0; j < this->getN_columns(); j++) {
-			mAns.setElement(i, j, this->returnElement(i, j) + m.returnElement(i, j));
+			mAns.setElement(i, j, this->getElement(i, j) + m.getElement(i, j));
 		}
 	}
 	return mAns;
@@ -116,7 +125,7 @@ const Matrix Matrix::subtract(const Matrix& m)
 	Matrix mAns(this->getN_rows(), this->getN_columns());
 	for (int i = 0; i < this->getN_rows(); i++) {
 		for (int j = 0; j < this->getN_columns(); j++) {
-			mAns.setElement(i, j, this->returnElement(i, j) - m.returnElement(i, j));
+			mAns.setElement(i, j, this->getElement(i, j) - m.getElement(i, j));
 		}
 	}
 	return mAns;
@@ -127,18 +136,34 @@ const Matrix Matrix::transpose()
 	Matrix mAns(this->getN_rows(), this->getN_columns());
 	for (int i = 0; i < this->getN_rows(); i++) {
 		for (int j = 0; j < this->getN_columns(); j++) {
-			mAns.setElement(i, j, this->returnElement(j, i));
+			mAns.setElement(i, j, this->getElement(j, i));
 		}
 	}
 	return mAns;
 }
 
-const Matrix Matrix::scalar(double scalar)
+const Matrix Matrix::scalar(const double& scalar)
 {
 	Matrix m(this->getN_rows(), this->getN_columns());
 	for (int i = 0; i < this->getN_rows(); i++) {
 		for (int j = 0; j < this->getN_columns(); j++) {
-			m.setElement(i, j, scalar * this->returnElement(i, j));
+			m.setElement(i, j, scalar * this->getElement(i, j));
+		}
+	}
+	return m;
+}
+
+const Matrix Matrix::REF()
+{
+	Matrix m(*this);
+	for (int i = 0; i < m.getN_rows(); i++) {
+		double diagVal = m.getElement(i, i);
+		for (int j = i+1; j < m.getN_rows(); j++) {
+			double currentElement = m.getElement(j, i);
+			double mult = currentElement / diagVal;
+			for (int c = 0; c < m.getN_columns(); c++) {
+				m.setElement(j, c, m.getElement(j, c) - mult * m.getElement(i, c));
+			}
 		}
 	}
 	return m;
@@ -184,11 +209,11 @@ int* Matrix::inputToDim(std::string in)
 	
 }
 
-const double Matrix::returnElement(int i, int j) const
+const double Matrix::getElement(int i, int j) const
 {
 	if (i >= this->n_rows || j >= this->n_columns) {
 		MatrixException me("Index out of bounds!");
-		std::cout << me.toString() << "  " << me.getWhat() << " at Matrix::returnElement(" << i << ", " << j << ")" << std::endl;
+		std::cout << me.toString() << "  " << me.getWhat() << " at Matrix::getElement(" << i << ", " << j << ")" << std::endl;
 		throw me;
 	}
 	std::vector<double> vd = this->rows.at(this->n_rows - 1);
