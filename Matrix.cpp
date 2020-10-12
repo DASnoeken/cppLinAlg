@@ -10,6 +10,7 @@ Matrix::Matrix(std::string input)
 	int* dim = inputToDim(input);
 	this->n_rows = dim[0];
 	this->n_columns = dim[1];
+	this->rrMult = 1.0;
 	std::vector<double> row;
 	std::string delimiter = ",";
 	for (int j = 0; j < n_rows; j++) {
@@ -33,6 +34,7 @@ Matrix::Matrix(int i, int j)
 {
 	this->n_rows = i;
 	this->n_columns = j;
+	this->rrMult = 1.0;
 	std::vector<double> row;
 	for (int i = 0; i < this->n_rows; i++) {
 		for (int j = 0; j < this->n_columns; j++) {
@@ -46,6 +48,7 @@ Matrix::Matrix(const Matrix& m_old)	//copy ctor
 {
 	this->n_rows = m_old.getN_rows();
 	this->n_columns = m_old.getN_columns();
+	this->rrMult = 1.0;
 	std::vector<double> row;
 	for (int i = 0; i < this->n_rows; i++) {
 		for (int j = 0; j < this->n_columns; j++) {
@@ -169,6 +172,21 @@ const Matrix Matrix::REF()
 	return m;
 }
 
+const double Matrix::det()
+{
+	if (this->getN_rows() != this->getN_columns()) {
+		MatrixException me("Matrix needs to be square!");
+		std::cout << me.toString() << " " << me.getWhat() << " " << " at Matrix::det()" << std::endl;
+		throw me;
+	}
+	double diagProd = 1.0;
+	Matrix m = this->REF();
+	for (int i = 0; i < this->getN_rows(); i++) {
+		diagProd *= m.getElement(i, i);
+	}
+	return m.getRrMult() * diagProd;
+}
+
 const int Matrix::getN_rows() const
 {
 	return n_rows;
@@ -177,6 +195,11 @@ const int Matrix::getN_rows() const
 const int Matrix::getN_columns() const
 {
 	return this->n_columns;
+}
+
+const double Matrix::getRrMult() const
+{
+	return this->rrMult;
 }
 
 Matrix::~Matrix()

@@ -34,6 +34,11 @@ int main()
         m9.printElements();
         m9 = m9.REF();
         m9.printElements();
+        Matrix m10("2,3,5;7,11,13;17,19,23");
+        double m10determinant = m10.det();
+        std::cout << "determinant of: \n";
+        m10.printElements();
+        std::cout << " = " << m10determinant << std::endl;
     }
     catch (MatrixException me) {
         std::cout << "\033[1;31mERROR!\033[0m " << "Exception caught!" << std::endl;

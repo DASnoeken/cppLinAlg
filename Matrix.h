@@ -18,11 +18,14 @@ public:
 	const Matrix transpose();
 	const Matrix scalar(const double& scalar);
 	const Matrix REF();
+	const double det();
 
 	const int getN_rows() const;
 	const int getN_columns() const;
+	const double getRrMult() const;
 private:
 	int n_rows, n_columns;
 	std::vector< std::vector<double> > rows;
+	double rrMult;
 };
 
