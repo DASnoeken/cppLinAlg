@@ -47,4 +47,10 @@ int main()
     const char* biIn = "123456789987654321123456789";
     BigInt bi(biIn);
     bi.printNumber();
+    BigInt b = bi + bi;
+    std::cout << " + ";
+    bi.printNumber();
+    std::cout << " = ";
+    b.printNumber();
+    std::cout << std::endl;
 }

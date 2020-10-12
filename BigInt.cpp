@@ -1,6 +1,7 @@
 #include "BigInt.h"
 #include <charconv>
 #include <iostream>
+#include <string>
 
 BigInt::BigInt(const char* in)
 {
@@ -15,9 +16,32 @@ BigInt::BigInt(const char* in)
 	}
 }
 
-BigInt BigInt::operator+(const BigInt& bi)		//not implemented yet
+BigInt BigInt::operator+(const BigInt& bi)
 {
-	return BigInt("0");
+	std::string answer;
+	std::vector<short> otherDigits = bi.getDigits();
+	std::vector<short>::reverse_iterator riter = this->digits.rbegin();
+	std::vector<short>::reverse_iterator riterOther = otherDigits.rbegin();
+	short digit1, digit2, sum, carry;
+	carry = 0;
+	while (riter != this->digits.rend() && riterOther != otherDigits.rend()) {
+		digit1 = *riter;
+		digit2 = *riterOther;
+		sum = digit1 + digit2 + carry;
+		std::string sumstring = std::to_string(sum);
+		if (sum < 10) {
+			answer = sumstring + answer;
+			carry = 0;
+		}
+		else {
+			std::string_view sv(sumstring);
+			carry = 1;
+			answer = sv.at(1) + answer;
+		}
+		++riter;
+		++riterOther;
+	}
+	return BigInt(answer.c_str());
 }
 
 BigInt BigInt::operator-(const BigInt& bi)		//not implemented yet
@@ -35,7 +59,6 @@ void BigInt::printNumber()
 	for (unsigned int i = 0; i < this->getNumberOfDigits(); i++) {
 		std::cout << this->getDigits().at(i);
 	}
-	std::cout << std::endl;
 }
 
 const unsigned int BigInt::getNumberOfDigits() const
