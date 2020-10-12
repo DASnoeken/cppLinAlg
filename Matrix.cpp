@@ -1,11 +1,12 @@
 #include "Matrix.h"
 #include "MatrixException.h"
-#include <memory>
 #include <iostream>
 #include <string>
 #include <iomanip>
+#include <string_view>
+#include <charconv>
 
-Matrix::Matrix(std::string input)
+Matrix::Matrix(const char* input)
 {
 	int* dim = inputToDim(input);
 	this->n_rows = dim[0];
@@ -13,17 +14,37 @@ Matrix::Matrix(std::string input)
 	this->rrMult = 1.0;
 	std::vector<double> row;
 	std::string delimiter = ",";
+	std::string delimiter2 = ";";
+	std::string_view sv(input);
 	for (int j = 0; j < n_rows; j++) {
 		for (int i = 0; i < n_columns; i++) {
-			if(input.find(delimiter)<input.find(";")){
-				double val = std::stod(input.substr(0,input.find(delimiter)));
-				input.erase(0, input.find(delimiter) + 1);
-				row.push_back(val);
+			//std::cout << "sv: " << sv << " delims: " << sv.find(delimiter) << " " << sv.find(delimiter2) << std::endl;
+			if (sv.find(delimiter2) == std::string_view::npos) {
+				double d;
+				if (sv.find(delimiter) != std::string_view::npos)
+					std::from_chars_result val = std::from_chars(sv.data(), sv.data() + sv.find(delimiter), d);		//sv.substr(0,sv.find(delimiter))
+				else
+					std::from_chars_result val = std::from_chars(sv.data(), sv.data() + sv.size(), d);
+				sv = std::string_view(sv.data() + sv.find(delimiter) + 1);// .erase(0, sv.find(delimiter) + 1);
+				row.push_back(d);
 			}
 			else {
-				double val = std::stod(input.substr(0, input.find(";")));
-				input.erase(0, input.find(";") + 1);
-				row.push_back(val);
+				if (sv.find(delimiter) < sv.find(delimiter2)) {
+					double d;
+					if (sv.find(delimiter) != std::string_view::npos) {
+						std::from_chars_result val = std::from_chars(sv.data(), sv.data() + sv.find(delimiter), d);
+					}
+					sv = std::string_view(sv.data() + sv.find(delimiter) + 1);
+					row.push_back(d);
+				}
+				else {
+					double d;
+					if (sv.find(delimiter2) != std::string_view::npos) {
+						std::from_chars_result val = std::from_chars(sv.data(), sv.data() + sv.find(delimiter2), d);
+					}
+					sv = std::string_view(sv.data() + sv.find(delimiter2) + 1);
+					row.push_back(d);
+				}
 			}
 		}
 		this->rows.push_back(row);
@@ -207,7 +228,7 @@ Matrix::~Matrix()
 	
 }
 
-int* Matrix::inputToDim(std::string in)
+int* Matrix::inputToDim(std::string_view in)
 {
 		static int out[2];
 		int nrows = 1;
@@ -215,15 +236,15 @@ int* Matrix::inputToDim(std::string in)
 		int colcount = 0;
 		bool cols = true;
 		for (int i = 0; i < in.size(); i++) {
-			if (in.at(i) == ';') {
+			if (in.data()[i] == ';') {
 				nrows++;
-				if (cols) {
-					ncol += colcount;
-				}
-				cols = false;
 			}
-			else if (in.at(i) == ',') {
+			else if (in.data()[i] == ',') {
 				colcount++;
+			}
+			if (cols && (in.data()[i] == ';' || i== in.size()-1)) {
+				ncol += colcount;
+				cols = false;
 			}
 		}
 		out[0] = nrows;

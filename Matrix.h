@@ -1,14 +1,15 @@
 #pragma once
 #include <iostream>
 #include <vector>
+#include <string_view>
 class Matrix
 {
 public:
-	Matrix(std::string input);
+	Matrix(const char* input);
 	Matrix(int i, int j);
 	Matrix(const Matrix& m_old);
 	~Matrix();
-	int* inputToDim(std::string in);
+	int* inputToDim(std::string_view in);
 	const double getElement(int i, int j) const;
 	void printElements();
 	void setElement(int i, int j, double val);
