@@ -13,8 +13,8 @@ Matrix::Matrix(const char* input)
 	this->n_columns = dim[1];
 	this->rrMult = 1.0;
 	std::vector<double> row;
-	std::string delimiter = ",";
-	std::string delimiter2 = ";";
+	std::string_view delimiter = ",";
+	std::string_view delimiter2 = ";";
 	std::string_view sv(input);
 	for (int j = 0; j < n_rows; j++) {
 		for (int i = 0; i < n_columns; i++) {
