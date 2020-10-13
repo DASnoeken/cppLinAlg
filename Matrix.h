@@ -13,11 +13,7 @@ public:
 	const double getElement(int i, int j) const;
 	void printElements();
 	void setElement(int i, int j, double val);
-	const Matrix multiply(const Matrix& m);
-	const Matrix add(const Matrix& m);
-	const Matrix subtract(const Matrix& m);
 	const Matrix transpose();
-	const Matrix scalar(const double& scalar);
 	const Matrix REF();
 	const double det();
 	const Matrix operator+(const Matrix& m);

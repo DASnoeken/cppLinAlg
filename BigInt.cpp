@@ -12,7 +12,7 @@ BigInt::BigInt(const char* in)
 		short s;
 		std::from_chars_result fsr = std::from_chars(input.data(), input.data() + 1, s);
 		input = std::string_view(input.data() + 1);
-		this->digits.push_back(s);
+		this->digits.emplace_back(s);
 	}
 }
 
@@ -46,12 +46,13 @@ BigInt BigInt::operator+(const BigInt& bi)
 
 BigInt BigInt::operator-(const BigInt& bi)		//not implemented yet
 {
+
 	return BigInt("0");
 }
 
 void BigInt::setDigit(unsigned int& index, unsigned short& val)
 {
-
+	this->digits.at(index) = val;
 }
 
 void BigInt::printNumber()
