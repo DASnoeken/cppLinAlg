@@ -1,14 +1,8 @@
 #include <iostream>
 #include "Matrix.h"
-#include <memory>
 #include "MatrixException.h"
 #include "BigInt.h"
-#include <algorithm>
-#include <cstdlib>
-#include <iostream>
-#include <new>
-#include <string>
-#include <array>
+
 
 int main()
 {
@@ -59,12 +53,21 @@ int main()
     std::cout << " = ";
     b.printNumber();
     std::cout << std::endl;
+    BigInt b2 = b;
+    std::cout << "b2: ";
+    b2.printNumber();
 }
 
-
 //Here is some stuff to find memory leaks
+/*
+#include <algorithm>
+#include <cstdlib>
+#include <new>
+#include <string>
+#include <array>
 
-/*int const MY_SIZE = 25;
+
+int const MY_SIZE = 25;
 int alloc = 0;
 int dealloc = 0;
 std::array<void*, MY_SIZE> myAlloc{ nullptr, };
