@@ -1,4 +1,6 @@
 #include "BigInt.h"
+#include "BigIntException.h"
+
 #include <charconv>
 #include <iostream>
 #include <string>
@@ -6,8 +8,18 @@
 BigInt::BigInt(const char* in)
 {
 	std::string_view input(in);
+	if (input.at(0) == '-') {
+		this->sign = -1;
+		input = std::string_view(input.data() + 1);
+	}
+	else {
+		this->sign = 1;
+	}
+	while (input.at(0) == '0') {
+		input = std::string_view(input.data() + 1);
+	}
 	this->numberOfDigits = input.size();
-	this->digits.reserve(this->numberOfDigits + 1);
+	this->digits.reserve(this->numberOfDigits);
 	for (unsigned int i = 0; i < this->numberOfDigits; i++) {
 		short s;
 		std::from_chars_result fsr = std::from_chars(input.data(), input.data() + 1, s);
@@ -18,6 +30,13 @@ BigInt::BigInt(const char* in)
 
 BigInt::BigInt(int in)
 {
+	if (in < 0) {
+		this->sign = -1;
+		in *= -1;
+	}
+	else {
+		this->sign = 1;
+	}
 	std::string_view input(std::to_string(in).c_str());
 	this->numberOfDigits = input.size();
 	this->digits.reserve(this->numberOfDigits + 1);
@@ -31,6 +50,13 @@ BigInt::BigInt(int in)
 
 BigInt::BigInt(long in)
 {
+	if (in < 0) {
+		this->sign = -1;
+		in *= -1;
+	}
+	else {
+		this->sign = 1;
+	}
 	std::string_view input(std::to_string(in).c_str());
 	this->numberOfDigits = input.size();
 	this->digits.reserve(this->numberOfDigits + 1);
@@ -44,6 +70,13 @@ BigInt::BigInt(long in)
 
 BigInt::BigInt(short in)
 {
+	if (in < 0) {
+		this->sign = -1;
+		in *= -1;
+	}
+	else {
+		this->sign = 1;
+	}
 	std::string_view input(std::to_string(in).c_str());
 	this->numberOfDigits = input.size();
 	this->digits.reserve(this->numberOfDigits + 1);
@@ -57,8 +90,8 @@ BigInt::BigInt(short in)
 
 BigInt::BigInt(const BigInt& bi_old)
 {
-	std::cout << "here" << std::endl;
 	std::string newInput = "";
+	this->sign = bi_old.getSign();
 	for (int i = 0; i < bi_old.digits.size(); i++) {
 		newInput += std::to_string(bi_old.digits.at(i));
 	}
@@ -101,25 +134,167 @@ BigInt BigInt::operator+(const BigInt& bi)
 	return BigInt(answer.c_str());
 }
 
-BigInt BigInt::operator-(const BigInt& bi)		//not implemented yet
+BigInt BigInt::operator-(const BigInt& bi)
 {
+	if (this->compare(bi) == 0) {
+		return BigInt("0");
+	}
+	std::string answer;
+	std::vector<short> otherDigits = bi.getDigits();
+	std::vector<short>::reverse_iterator riter = this->digits.rbegin();
+	std::vector<short>::reverse_iterator riterOther = otherDigits.rbegin();
+	short digit1, digit2, diff, newsign;
+	unsigned int index;
 
-	return BigInt("0");
+	if (this->compare(bi) > 0) {		//case answer will be positive
+		
+		newsign = 1;
+		while (riter != this->digits.rend() && riterOther != otherDigits.rend()) {
+			digit1 = *riter;
+			digit2 = *riterOther;
+			if (digit1 >= digit2) {
+				diff = digit1 - digit2;
+				std::string sumstring = std::to_string(diff);
+				answer = sumstring + answer;
+				++riter; ++riterOther;
+				continue;
+			}
+			else {
+				index = riter - this->digits.rbegin() - 1;
+				if (this->digits.at(index) > 0) {
+					this->digits.at(index)--;
+					diff = 10 + digit1 - digit2;
+					std::string sumstring = std::to_string(diff);
+					answer = sumstring + answer;
+					++riter; ++riterOther;
+					continue;
+				}
+				else {
+					while (index >= 0 && this->digits.at(index) == 0) {
+						this->setDigit(index, 9);
+						index--;
+					}
+					this->digits.at(index)--;
+					diff = 10 + digit1 - digit2;
+					std::string sumstring = std::to_string(diff);
+					answer = sumstring + answer;
+					++riter; ++riterOther;
+					continue;
+				}
+			}
+		}
+		while (riter != this->digits.rend()) {
+			std::string sumstring = std::to_string(*riter);
+			std::cout << sumstring << std::endl;
+			answer = sumstring + answer;
+			++riter;
+		}
+		while (riterOther != otherDigits.rend()) {
+			std::string sumstring = std::to_string(*riterOther);
+			answer = sumstring + answer;
+			++riterOther;
+		}
+	}
+	else {		// case answer will be negative
+		newsign = -1;
+		while (riter != this->digits.rend() && riterOther != otherDigits.rend()) {
+			digit2 = *riter;
+			digit1 = *riterOther;
+			if (digit1 >= digit2) {
+				diff = digit1 - digit2;
+				std::string sumstring = std::to_string(diff);
+				answer = sumstring + answer;
+				++riter; ++riterOther;
+				continue;
+			}
+			else {
+				index = riter - this->digits.rbegin() - 1;
+				if (this->digits.at(index) > 0) {
+					this->digits.at(index)--;
+					diff = 10 + digit1 - digit2;
+					std::string sumstring = std::to_string(diff);
+					answer = sumstring + answer;
+					++riter; ++riterOther;
+					continue;
+				}
+				else {
+					while (index >= 0 && this->digits.at(index) == 0) {
+						this->setDigit(index,9);
+						index--;
+					}
+					this->digits.at(index)--;
+					diff = 10 + digit1 - digit2;
+					std::string sumstring = std::to_string(diff);
+					answer = sumstring + answer;
+					++riter; ++riterOther;
+					continue;
+				}
+			}
+		}
+		while (riter != this->digits.rend()) {
+			std::string sumstring = std::to_string(*riter);
+			answer = sumstring + answer;
+			++riter;
+		}
+		while (riterOther != otherDigits.rend()) {
+			std::string sumstring = std::to_string(*riterOther);
+			answer = sumstring + answer;
+			++riterOther;
+		}
+		answer = '-' + answer;
+	}
+
+	return BigInt(answer.c_str());
 }
 
-void BigInt::setDigit(unsigned int& index, unsigned short& val)
+void BigInt::setDigit(unsigned int& index, int val)
 {
+	if (val > 9 || val < 0) {
+		BigIntException bie("Invalid digit value!");
+		std::cout << bie.toString() << " " << bie.getWhat() << " At BigInt::setDigit(unsigned int& index, unsigned short& val)." << std::endl;
+		throw bie;
+	}
 	this->digits.at(index) = val;
 }
 
 void BigInt::printNumber()
 {
+	if (this->sign == -1) {
+		std::cout << "-";
+	}
 	for (unsigned int i = 0; i < this->getNumberOfDigits(); i++) {
 		std::cout << this->getDigits().at(i);
 	}
+	std::cout << std::endl;
 }
 
-int BigInt::compare(const BigInt& other) //returns 0 when equal, -1 when this<other and 1 when this>other
+void BigInt::printNumber(const char* option)
+{
+	if (option == "raw") {
+		if (this->sign == -1) {
+			std::cout << "-";
+		}
+		for (unsigned int i = 0; i < this->getNumberOfDigits(); i++) {
+			std::cout << this->getDigits().at(i);
+		}
+		std::cout << std::endl;
+	}
+	else if (option == "format") {
+		if (this->sign == -1) {
+			std::cout << "-";
+		}
+		std::string s = "";
+		for (int i = this->getNumberOfDigits() - 1; i >= 0 ; i--) {
+			s = std::to_string(this->getDigits().at(i)) + s;
+			if (i % 3 == 0 && i != 0) {
+				s = " " + s;
+			}
+		}
+		std::cout << s << std::endl;
+	}
+}
+
+short BigInt::compare(const BigInt& other) //returns 0 when equal, -1 when this<other and 1 when this>other
 {
 	if (this->getDigits().size() != other.getDigits().size()) {
 		if (this->getNumberOfDigits() < other.getNumberOfDigits())
@@ -167,5 +342,10 @@ const unsigned int BigInt::getNumberOfDigits() const
 const std::vector<short> BigInt::getDigits() const
 {
 	return this->digits;
+}
+
+const short BigInt::getSign() const
+{
+	return this->sign;
 }
 
