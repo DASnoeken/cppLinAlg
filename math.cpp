@@ -3,7 +3,6 @@
 #include "MatrixException.h"
 #include "BigInt.h"
 
-
 int main()
 {
     /*const char* input = "1,2,3;4,5,6;7,8,93";
@@ -45,22 +44,16 @@ int main()
         std::cout << "\033[1;31mERROR!\033[0m " << "Exception caught!" << std::endl;
     }
     */
-    const char* biIn = "123456789987654321123456789987654321";
-    BigInt bi(biIn);
-    bi.printNumber();
-    BigInt b = bi + bi;
-    //b.printNumber();
-    BigInt b1("321123321123321123321");
-    b1.printNumber();
-    BigInt b3 = bi - b1;
-    b3.printNumber();
-    b3.printNumber("format");
-    bi.printNumber();
+    const char* biIn = "123 456 789987 654 321123 456 789 987 654 321";
+    int i = 31231;
+    BigInt bint(i);
+    std::cout << i << " = ";
+    bint.printNumber();
 }
 
 //Here is some stuff to find memory leaks
-/*
-#include <algorithm>
+
+/*#include <algorithm>
 #include <cstdlib>
 #include <new>
 #include <string>
@@ -88,7 +81,7 @@ void operator delete(void* ptr) noexcept {
     free(ptr);
 }
 
-void operator delete[](void* ptr, std::size_t sz){
+void operator delete[](void* ptr, std::size_t sz) {
     dealloc++;
     delete (ptr); // ::operator delete(ptr) can also be used
 }

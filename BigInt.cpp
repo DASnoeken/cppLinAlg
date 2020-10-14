@@ -4,6 +4,7 @@
 #include <charconv>
 #include <iostream>
 #include <string>
+#include <array>
 
 BigInt::BigInt(const char* in)
 {
@@ -15,12 +16,22 @@ BigInt::BigInt(const char* in)
 	else {
 		this->sign = 1;
 	}
-	while (input.at(0) == '0') {
+	while (input.at(0) == '0' || input.at(0) == '.' || input.at(0) == ',' || input.at(0) == ' ') {
 		input = std::string_view(input.data() + 1);
 	}
-	this->numberOfDigits = input.size();
+	int count = 0;
+	for (int i = 0; i < input.size(); i++) {
+		while (input.at(i) == '.' || input.at(i) == ',' || input.at(i) == ' ') {
+			count++;
+			i++;
+		}
+	}
+	this->numberOfDigits = input.size() - count;
 	this->digits.reserve(this->numberOfDigits);
 	for (unsigned int i = 0; i < this->numberOfDigits; i++) {
+		while (input.at(0) == '.' || input.at(0) == ',' || input.at(0) == ' ') {
+			input = std::string_view(input.data() + 1);
+		}
 		short s;
 		std::from_chars_result fsr = std::from_chars(input.data(), input.data() + 1, s);
 		input = std::string_view(input.data() + 1);
@@ -28,19 +39,34 @@ BigInt::BigInt(const char* in)
 	}
 }
 
-BigInt::BigInt(int in)
+BigInt::BigInt(int inp)
 {
-	if (in < 0) {
+	if (inp < 0) {
 		this->sign = -1;
-		in *= -1;
+		inp *= -1;
 	}
 	else {
 		this->sign = 1;
 	}
-	std::string_view input(std::to_string(in).c_str());
-	this->numberOfDigits = input.size();
-	this->digits.reserve(this->numberOfDigits + 1);
+	std::string s = std::to_string(inp);
+	char const* pchar = s.c_str();
+	std::string_view input(pchar);
+	while (input.at(0) == '0' || input.at(0) == '.' || input.at(0) == ',' || input.at(0) == ' ') {
+		input = std::string_view(input.data() + 1);
+	}
+	int count = 0;
+	for (int i = 0; i < input.size(); i++) {
+		while (input.at(i) == '.' || input.at(i) == ',' || input.at(i) == ' ') {
+			count++;
+			i++;
+		}
+	}
+	this->numberOfDigits = input.size() - count;
+	this->digits.reserve(this->numberOfDigits);
 	for (unsigned int i = 0; i < this->numberOfDigits; i++) {
+		while (input.at(0) == '.' || input.at(0) == ',' || input.at(0) == ' ') {
+			input = std::string_view(input.data() + 1);
+		}
 		short s;
 		std::from_chars_result fsr = std::from_chars(input.data(), input.data() + 1, s);
 		input = std::string_view(input.data() + 1);
@@ -48,19 +74,34 @@ BigInt::BigInt(int in)
 	}
 }
 
-BigInt::BigInt(long in)
+BigInt::BigInt(long inp)
 {
-	if (in < 0) {
+	if (inp < 0) {
 		this->sign = -1;
-		in *= -1;
+		inp *= -1;
 	}
 	else {
 		this->sign = 1;
 	}
-	std::string_view input(std::to_string(in).c_str());
-	this->numberOfDigits = input.size();
-	this->digits.reserve(this->numberOfDigits + 1);
+	std::string s = std::to_string(inp);
+	char const* pchar = s.c_str();
+	std::string_view input(pchar);
+	while (input.at(0) == '0' || input.at(0) == '.' || input.at(0) == ',' || input.at(0) == ' ') {
+		input = std::string_view(input.data() + 1);
+	}
+	int count = 0;
+	for (int i = 0; i < input.size(); i++) {
+		while (input.at(i) == '.' || input.at(i) == ',' || input.at(i) == ' ') {
+			count++;
+			i++;
+		}
+	}
+	this->numberOfDigits = input.size() - count;
+	this->digits.reserve(this->numberOfDigits);
 	for (unsigned int i = 0; i < this->numberOfDigits; i++) {
+		while (input.at(0) == '.' || input.at(0) == ',' || input.at(0) == ' ') {
+			input = std::string_view(input.data() + 1);
+		}
 		short s;
 		std::from_chars_result fsr = std::from_chars(input.data(), input.data() + 1, s);
 		input = std::string_view(input.data() + 1);
@@ -68,19 +109,34 @@ BigInt::BigInt(long in)
 	}
 }
 
-BigInt::BigInt(short in)
+BigInt::BigInt(short inp)
 {
-	if (in < 0) {
+	if (inp < 0) {
 		this->sign = -1;
-		in *= -1;
+		inp *= -1;
 	}
 	else {
 		this->sign = 1;
 	}
-	std::string_view input(std::to_string(in).c_str());
-	this->numberOfDigits = input.size();
-	this->digits.reserve(this->numberOfDigits + 1);
+	std::string s = std::to_string(inp);
+	char const* pchar = s.c_str();
+	std::string_view input(pchar);
+	while (input.at(0) == '0' || input.at(0) == '.' || input.at(0) == ',' || input.at(0) == ' ') {
+		input = std::string_view(input.data() + 1);
+	}
+	int count = 0;
+	for (int i = 0; i < input.size(); i++) {
+		while (input.at(i) == '.' || input.at(i) == ',' || input.at(i) == ' ') {
+			count++;
+			i++;
+		}
+	}
+	this->numberOfDigits = input.size() - count;
+	this->digits.reserve(this->numberOfDigits);
 	for (unsigned int i = 0; i < this->numberOfDigits; i++) {
+		while (input.at(0) == '.' || input.at(0) == ',' || input.at(0) == ' ') {
+			input = std::string_view(input.data() + 1);
+		}
 		short s;
 		std::from_chars_result fsr = std::from_chars(input.data(), input.data() + 1, s);
 		input = std::string_view(input.data() + 1);
