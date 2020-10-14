@@ -58,7 +58,7 @@ BigInt::BigInt(int inp)
 	std::string s = std::to_string(inp);
 	char const* pchar = s.c_str();
 	std::string_view input(pchar);
-	while (input.at(0) == '0' || input.at(0) == '.' || input.at(0) == ',' || input.at(0) == ' ') {
+	while ((input.at(0) == '0' && input != "0") || input.at(0) == '.' || input.at(0) == ',' || input.at(0) == ' ') {
 		input = std::string_view(input.data() + 1);
 	}
 	int count = 0;
@@ -93,7 +93,7 @@ BigInt::BigInt(long inp)
 	std::string s = std::to_string(inp);
 	char const* pchar = s.c_str();
 	std::string_view input(pchar);
-	while (input.at(0) == '0' || input.at(0) == '.' || input.at(0) == ',' || input.at(0) == ' ') {
+	while ((input.at(0) == '0' && input != "0") || input.at(0) == '.' || input.at(0) == ',' || input.at(0) == ' ') {
 		input = std::string_view(input.data() + 1);
 	}
 	int count = 0;
@@ -128,7 +128,7 @@ BigInt::BigInt(short inp)
 	std::string s = std::to_string(inp);
 	char const* pchar = s.c_str();
 	std::string_view input(pchar);
-	while (input.at(0) == '0' || input.at(0) == '.' || input.at(0) == ',' || input.at(0) == ' ') {
+	while ((input.at(0) == '0' && input != "0") || input.at(0) == '.' || input.at(0) == ',' || input.at(0) == ' ') {
 		input = std::string_view(input.data() + 1);
 	}
 	int count = 0;
@@ -171,6 +171,16 @@ BigInt::BigInt(const BigInt& bi_old)
 
 BigInt BigInt::operator+(const BigInt& bi)
 {
+	int newsign = 1;
+	if (this->getSign() < 0 && bi.getSign() > 0) {
+		return BigInt(bi) - *this;
+	}
+	else if (this->getSign() > 0 && bi.getSign() < 0) {
+		return *this - BigInt(bi);
+	}
+	else if (this->getSign() < 0 && bi.getSign() < 0) {
+		newsign = -1;
+	}
 	std::string answer;
 	std::vector<short> otherDigits = bi.getDigits();
 	std::vector<short>::reverse_iterator riter = this->digits.rbegin();
@@ -204,7 +214,9 @@ BigInt BigInt::operator+(const BigInt& bi)
 		answer = sumstring + answer;
 		++riterOther;
 	}
-	return BigInt(answer.c_str());
+	BigInt ans = answer.c_str();
+	ans.setSign(newsign);
+	return ans;
 }
 
 BigInt BigInt::operator-(const BigInt& bi)
@@ -234,7 +246,7 @@ BigInt BigInt::operator-(const BigInt& bi)
 				continue;
 			}
 			else {
-				index = riter - localDigits.rbegin() - 1;
+				index = riter - localDigits.rbegin();
 				if (localDigits.at(index) > 0) {
 					localDigits.at(index)--;
 					diff = 10 + digit1 - digit2;
@@ -378,7 +390,39 @@ BigInt BigInt::operator^(const BigInt& bi)
 
 BigInt BigInt::operator/(const BigInt& bi)
 {
-	return BigInt("0");
+	if (bi.equals(0)) {
+		BigIntException bie("Division by 0!");
+		std::cout << bie << " " << bie.getWhat() << " At BigInt::operator/(const BigInt& bi)" << std::endl;
+		throw bie;
+	}
+	else if (this->equals(0)) {
+		return 0;
+	}
+	else if (bi.equals(1)) {
+		return *this;
+	}
+	else if (bi.equals(*this)) {
+		return 1;
+	}
+	BigInt numerator = *this;
+	BigInt denominator = bi;
+	BigInt remainder = 0;
+	BigInt ans = 0;
+	if (numerator.compare(denominator) > 0) {
+		while (numerator.compare(denominator) >= 0) {
+			numerator = numerator - denominator;
+			ans = ans + 1;
+		}
+		remainder = numerator;
+	}
+	else if (numerator.compare(denominator) < 0) {
+		ans = 0;
+		remainder = numerator;
+	}
+	if (!remainder.equals(0)) {
+		std::cout << "Operation: " << *this << "/" << denominator << " gave a remainder of " << remainder << std::endl;
+	}
+	return ans;
 }
 
 void BigInt::setDigit(unsigned int& index, short val)
@@ -389,6 +433,11 @@ void BigInt::setDigit(unsigned int& index, short val)
 		throw bie;
 	}
 	this->digits.at(index) = val;
+}
+
+void BigInt::setSign(short sign)
+{
+	this->sign = sign;
 }
 
 long long BigInt::to_LLONG()
@@ -423,6 +472,42 @@ int BigInt::to_INT()
 	for (int i = this->getNumberOfDigits() - 1; i >= 0; --i) {
 		ans += ((int)this->getDigit(i) * tens);
 		tens *= 10;
+	}
+	return ans;
+}
+
+unsigned int BigInt::to_UINT()
+{
+	if (this->getSign() < 0 || this->compare(UINT_MAX_VAL) == 1) {
+		BigIntException bie("Number out of bounds for UINT!");
+		std::cout << bie << " " << bie.getWhat() << " Minimum value = 0"
+			<< " Max allowed value = " << this->get_UINT_MAX() << "\nYou entered: " << *this
+			<< ".\n At BigInt::to_UINT()." << std::endl;
+		throw bie;
+	}
+	unsigned int ans = 0;
+	unsigned int tens = 1;
+	for (int i = this->getNumberOfDigits() - 1; i >= 0; --i) {
+		ans += ((int)this->getDigit(i) * tens);
+		tens *= 10;
+	}
+	return ans;
+}
+
+unsigned long long BigInt::to_ULLONG()
+{
+	if (this->getSign() < 0 || this->compare(ULLONG_MAX_VAL) == 1) {
+		BigIntException bie("Number out of bounds for ULLONG!");
+		std::cout << bie << " " << bie.getWhat() << " Minimum value = 0"
+			<< " Max allowed value = " << this->get_ULLONG_MAX() << "\nYou entered: " << *this
+			<< ".\n At BigInt::to_ULLONG()." << std::endl;
+		throw bie;
+	}
+	unsigned long long ans = 0;
+	unsigned long long tens = 1;
+	for (int i = this->getNumberOfDigits() - 1; i >= 0; --i) {
+		ans += ((long long)this->getDigit(i) * tens);
+		tens *= 10ll;
 	}
 	return ans;
 }

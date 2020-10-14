@@ -32,10 +32,13 @@ public:
 
 	//Modifiers
 	void setDigit(unsigned int& index, short val);
+	void setSign(short sign);
 
 	//Converters
 	long long to_LLONG();
 	int to_INT();
+	unsigned int to_UINT();
+	unsigned long long to_ULLONG();
 
 	//Other functions
 	void printNumber() const;
