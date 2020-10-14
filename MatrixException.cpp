@@ -12,3 +12,8 @@ const char* MatrixException::getWhat()
 std::string MatrixException::toString() {
 	return "Thrown MatrixException!";
 }
+
+std::ostream& operator<<(std::ostream& os, const MatrixException& me)
+{
+	return(os << "\033[1;31mERROR![0m");
+}

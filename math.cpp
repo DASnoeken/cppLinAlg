@@ -16,7 +16,6 @@ int main()
         std::cout << "Addition: \n";
         Matrix m4 = m + m2;
         m4.printElements();
-        
         std::cout << "multiply: \n";
         Matrix m3 = m*m2;
         m3.printElements();
@@ -41,7 +40,7 @@ int main()
         std::cout << " = " << m10determinant << std::endl;
     }
     catch (MatrixException me) {
-        std::cout << "\033[1;31mERROR!\033[0m " << "Exception caught!" << std::endl;
+        std::cout << me << "Exception caught!" << std::endl;
     }
     std::cout << "Test BigInt class" << std::endl;
     const char* biIn = "7894561315345548498498615615164897894841321312565498789784655465135111303110123151301051354848948351132135157984561231";
@@ -62,6 +61,8 @@ int main()
     BigInt bipans = bip ^ bip2;
     std::cout << (3 * 3 * 3 * 3) << " = " << bipans << std::endl;
     std::cout << "Some BigInt: " << BigInt("319208385719841092417498324") << std::endl;
+    long long lb = bipans.to_LLONG();
+    std::cout << bipans << " = " << lb << std::endl;
 }
 
 //Here is some stuff to find memory leaks

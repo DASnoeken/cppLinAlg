@@ -376,14 +376,55 @@ BigInt BigInt::operator^(const BigInt& bi)
 	return ans;
 }
 
-void BigInt::setDigit(unsigned int& index, int val)
+BigInt BigInt::operator/(const BigInt& bi)
+{
+	return BigInt("0");
+}
+
+void BigInt::setDigit(unsigned int& index, short val)
 {
 	if (val > 9 || val < 0) {
 		BigIntException bie("Invalid digit value!");
-		std::cout << bie.toString() << " " << bie.getWhat() << " At BigInt::setDigit(unsigned int& index, unsigned short& val)." << std::endl;
+		std::cout << bie << " " << bie.getWhat() << " At BigInt::setDigit(unsigned int& index, unsigned short& val)." << std::endl;
 		throw bie;
 	}
 	this->digits.at(index) = val;
+}
+
+long long BigInt::to_LLONG()
+{
+	if (this->compare(LLONG_MAX_VAL) == 1 || this->compare(LLONG_MIN_VAL) == -1) {
+		BigIntException bie("Number out of bounds for LLONG!");
+		std::cout << bie << " " << bie.getWhat() << " Minimum value = " << this->get_LLONG_MIN() 
+			<< "\nMax allowed value = " << this->get_LLONG_MAX() 
+			<< "\nYou entered: " << *this << ".\n At BigInt::to_LLONG()." << std::endl;
+		throw bie;
+	}
+	long long ans = 0;
+	long long tens = 1;
+	for (int i = this->getNumberOfDigits() - 1; i >= 0; --i) {
+		ans += ((long long)this->getDigit(i) * tens);
+		tens *= 10ll;
+	}
+	return ans;
+}
+
+int BigInt::to_INT()
+{
+	if (this->compare(INT_MAX_VAL) == 1 || this->compare(INT_MIN_VAL) == -1) {
+		BigIntException bie("Number out of bounds for INT!");
+		std::cout << bie << " " << bie.getWhat() << " Minimum value = " << this->get_INT_MIN()
+			<< " Max allowed value = " << this->get_INT_MAX() << "\nYou entered: " << *this
+			<< ".\n At BigInt::to_INT()." << std::endl;
+		throw bie;
+	}
+	int ans = 0;
+	int tens = 1;
+	for (int i = this->getNumberOfDigits() - 1; i >= 0; --i) {
+		ans += ((int)this->getDigit(i) * tens);
+		tens *= 10;
+	}
+	return ans;
 }
 
 void BigInt::printNumber() const
@@ -493,6 +534,11 @@ const unsigned int BigInt::getNumberOfDigits() const
 const std::vector<short> BigInt::getDigits() const
 {
 	return this->digits;
+}
+
+const short BigInt::getDigit(int index) const
+{
+	return this->getDigits().at(index);
 }
 
 const short BigInt::getSign() const

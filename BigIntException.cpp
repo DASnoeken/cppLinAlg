@@ -14,4 +14,7 @@ std::string BigIntException::toString()
 	return "Thrown BigIntException!";
 }
 
-
+std::ostream& operator<<(std::ostream& os, const BigIntException& bie)
+{
+	return (os << "\033[1;31mERROR![0m");
+}
