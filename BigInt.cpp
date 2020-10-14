@@ -187,6 +187,16 @@ BigInt BigInt::operator+(const BigInt& bi)
 		++riter;
 		++riterOther;
 	}
+	while (riter != this->digits.rend()) {		//leftover numbers
+		std::string sumstring = std::to_string(*riter);
+		answer = sumstring + answer;
+		++riter;
+	}
+	while (riterOther != otherDigits.rend()) {
+		std::string sumstring = std::to_string(*riterOther);
+		answer = sumstring + answer;
+		++riterOther;
+	}
 	return BigInt(answer.c_str());
 }
 
@@ -242,7 +252,6 @@ BigInt BigInt::operator-(const BigInt& bi)
 		}
 		while (riter != localDigits.rend()) {
 			std::string sumstring = std::to_string(*riter);
-			std::cout << sumstring << std::endl;
 			answer = sumstring + answer;
 			++riter;
 		}
@@ -304,6 +313,32 @@ BigInt BigInt::operator-(const BigInt& bi)
 	return BigInt(answer.c_str());
 }
 
+BigInt BigInt::operator*(const BigInt& bi)
+{
+	if (bi.equals(BigInt("0")) || this->equals(BigInt("0"))) {	//first some special simple cases
+		return BigInt("0");
+	}
+	if (bi.equals(BigInt("1"))) {
+		return *this;
+	}
+	else if (this->equals(BigInt("1"))) {
+		return bi;
+	}
+	int newSign;
+	if (this->sign == bi.getSign()) {
+		newSign = 1;
+	}
+	else {
+		newSign = -1;
+	}
+	std::string answer;
+	std::vector<short> otherDigits = bi.getDigits();
+	std::vector<short>::reverse_iterator riter = this->digits.rbegin();
+	std::vector<short>::reverse_iterator riterOther = otherDigits.rbegin();
+
+	return BigInt("0");
+}
+
 void BigInt::setDigit(unsigned int& index, int val)
 {
 	if (val > 9 || val < 0) {
@@ -314,7 +349,7 @@ void BigInt::setDigit(unsigned int& index, int val)
 	this->digits.at(index) = val;
 }
 
-void BigInt::printNumber()
+void BigInt::printNumber() const
 {
 	if (this->sign == -1) {
 		std::cout << "-";
@@ -325,7 +360,7 @@ void BigInt::printNumber()
 	std::cout << std::endl;
 }
 
-void BigInt::printNumber(const char* option)
+void BigInt::printNumber(const char* option) const
 {
 	if (option == "raw") {
 		if (this->sign == -1) {
@@ -351,8 +386,14 @@ void BigInt::printNumber(const char* option)
 	}
 }
 
-short BigInt::compare(const BigInt& other) //returns 0 when equal, -1 when this<other and 1 when this>other
+const short BigInt::compare(const BigInt& other) const //returns 0 when equal, -1 when this<other and 1 when this>other
 {
+	if (this->getSign() > other.getSign()) {
+		return 1;
+	}
+	else if (this->getSign() < other.getSign()) {
+		return -1;
+	}
 	if (this->getDigits().size() != other.getDigits().size()) {
 		if (this->getNumberOfDigits() < other.getNumberOfDigits())
 			return -1;
@@ -375,8 +416,11 @@ short BigInt::compare(const BigInt& other) //returns 0 when equal, -1 when this<
 	return 0;
 }
 
-bool BigInt::equals(const BigInt& other)
+bool BigInt::equals(const BigInt& other) const
 {
+	if (this->getSign() != other.getSign()) {
+		return false;
+	}
 	if (this->getDigits().size() != other.getDigits().size()) {
 		return false;
 	}
@@ -405,4 +449,3 @@ const short BigInt::getSign() const
 {
 	return this->sign;
 }
-

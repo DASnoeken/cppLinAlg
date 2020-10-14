@@ -16,7 +16,6 @@ Matrix::Matrix(const char* input)
 	this->rows.reserve(this->n_rows);
 	std::vector<double> row;
 	row.reserve(this->n_columns);
-	delete[] dim;
 	this->rrMult = 1.0;
 	std::string_view delimiter = ",";
 	std::string_view delimiter2 = ";";
@@ -234,7 +233,7 @@ Matrix::~Matrix()
 
 int* Matrix::inputToDim(std::string_view in)
 {
-	int* out = new int[2];
+	int out[2];
 	int nrows = 1;
 	int ncol = 1;
 	int colcount = 0;

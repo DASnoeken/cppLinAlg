@@ -5,7 +5,7 @@
 
 int main()
 {
-    /*const char* input = "1,2,3;4,5,6;7,8,93";
+    const char* input = "1,2,3;4,5,6;7,8,93";
     Matrix m(input);
     const char* input2 = "1,1,1;2,2,2;3,3,3";
     Matrix m2(input2);
@@ -43,12 +43,13 @@ int main()
     catch (MatrixException me) {
         std::cout << "\033[1;31mERROR!\033[0m " << "Exception caught!" << std::endl;
     }
-    */
-    const char* biIn = "123 456 789987 654 321123 456 789 987 654 321";
+    std::cout << "Test BigInt class" << std::endl;
+    const char* biIn = "7894561315345548498498615615164897894841321312565498789784655465135111303110123151301051354848948351132135157984561231";
+    BigInt bi(biIn);
+    bi.printNumber();
     int i = 31231;
-    BigInt bint(i);
-    std::cout << i << " = ";
-    bint.printNumber();
+    BigInt bi2 = bi + i;
+    bi2.printNumber();
 }
 
 //Here is some stuff to find memory leaks

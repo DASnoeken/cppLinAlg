@@ -11,11 +11,12 @@ public:
 	BigInt(const BigInt& bi_old);
 	BigInt operator+(const BigInt& bi);
 	BigInt operator-(const BigInt& bi);
+	BigInt operator*(const BigInt& bi);
 	void setDigit(unsigned int& index, int val);
-	void printNumber();
-	void printNumber(const char* option);
-	short compare(const BigInt& other);
-	bool equals(const BigInt& other);
+	void printNumber() const;
+	void printNumber(const char* option) const;
+	const short compare(const BigInt& other) const;
+	bool equals(const BigInt& other) const;
 
 	const unsigned int getNumberOfDigits() const;
 	const std::vector<short> getDigits() const;
