@@ -246,7 +246,7 @@ BigInt BigInt::operator-(const BigInt& bi)
 				continue;
 			}
 			else {
-				index = riter - localDigits.rbegin();
+				index = localDigits.size() - (riter - localDigits.rbegin()) - 2;
 				if (localDigits.at(index) > 0) {
 					localDigits.at(index)--;
 					diff = 10 + digit1 - digit2;
@@ -257,7 +257,7 @@ BigInt BigInt::operator-(const BigInt& bi)
 				}
 				else {
 					while (index >= 0 && localDigits.at(index) == 0) {
-						this->setDigit(index, 9);
+						localDigits.at(index) = 9;
 						index--;
 					}
 					localDigits.at(index)--;

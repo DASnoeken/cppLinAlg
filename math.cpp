@@ -5,7 +5,7 @@
 
 int main()
 {
-    /*const char* input = "1,2,3;4,5,6;7,8,93";
+    const char* input = "1,2,3;4,5,6;7,8,93";
     Matrix m(input);
     const char* input2 = "1,1,1;2,2,2;3,3,3";
     Matrix m2(input2);
@@ -62,14 +62,18 @@ int main()
     std::cout << (3 * 3 * 3 * 3) << " = " << bipans << std::endl;
     std::cout << "Some BigInt: " << BigInt("319208385719841092417498324") << std::endl;
     long long lb = bipans.to_LLONG();
-    std::cout << bipans << " = " << lb << std::endl;*/
-    std::cout << BigInt("123") - BigInt("25") << std::endl;
-    
+    std::cout << bipans << " = " << lb << std::endl;
+
+    std::cout << "\n\nTesting operator-" << std::endl;
+    BigInt test = BigInt(123) - BigInt(25);
+    std::cout << "123 - 25 = " << test << std::endl;
+    BigInt test2 = BigInt("9999999999999999999999999999999999999999") - BigInt("3211233213561234821342511");
+    std::cout << "9999999999999999999999999999999999999999 - 3211233213561234821342511 = " << test2 << std::endl;
+    BigInt test3 = BigInt("123123123123123123123123123123123123123123123123") - BigInt("246246246246246246");
+    std::cout << "123123123123123123123123123123123123123123123123 - 246246246246246246 = " << test3 << std::endl;
     std::cout << "\n\nTesting operator/" << std::endl;
     BigInt bid("13");
     BigInt bid2("3");
-    //BigInt b2 = bid - bid2;
-    //std::cout << b2 << std::endl;
     BigInt bidans = bid / bid2;
     std::cout << "Actual 13/3 = " << 13 / 3 << std::endl;
     std::cout << bid << "/" << bid2 << " = " << bidans << std::endl;
@@ -77,6 +81,7 @@ int main()
     BigInt bidans2 = BigInt(12) / BigInt(13);
     std::cout << "Actual 12/13 = " << 12 / 13 << std::endl;
     std::cout << "12/13 = " << bidans2 << std::endl;
+    
 }
 
 //Here is some stuff to find memory leaks
