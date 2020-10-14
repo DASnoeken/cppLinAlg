@@ -6,7 +6,12 @@
 #include <string>
 #include <array>
 
-const BigInt BigInt::INT_MAX_VAL = BigInt("2147483647");
+const BigInt BigInt::INT_MAX_VAL    = BigInt("2147483647");
+const BigInt BigInt::INT_MIN_VAL    = BigInt("-2147483648");
+const BigInt BigInt::UINT_MAX_VAL   = BigInt("4294967295");
+const BigInt BigInt::LLONG_MAX_VAL  = BigInt("9223372036854775807");
+const BigInt BigInt::LLONG_MIN_VAL  = BigInt("-9223372036854775808");
+const BigInt BigInt::ULLONG_MAX_VAL = BigInt("18446744073709551615");
 
 BigInt::BigInt(const char* in)
 {
@@ -486,4 +491,29 @@ const short BigInt::getSign() const
 const BigInt BigInt::get_INT_MAX() const
 {
 	return INT_MAX_VAL;
+}
+
+const BigInt BigInt::get_INT_MIN() const
+{
+	return INT_MIN_VAL;
+}
+
+const BigInt BigInt::get_UINT_MAX() const
+{
+	return UINT_MAX_VAL;
+}
+
+const BigInt BigInt::get_LLONG_MAX() const
+{
+	return LLONG_MAX_VAL;
+}
+
+const BigInt BigInt::get_LLONG_MIN() const
+{
+	return LLONG_MIN_VAL;
+}
+
+const BigInt BigInt::get_ULLONG_MAX() const
+{
+	return ULLONG_MAX_VAL;
 }

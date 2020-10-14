@@ -23,10 +23,20 @@ public:
 	const std::vector<short> getDigits() const;
 	const short getSign() const;
 	const BigInt get_INT_MAX() const;
+	const BigInt get_INT_MIN() const;
+	const BigInt get_UINT_MAX() const;
+	const BigInt get_LLONG_MAX() const;
+	const BigInt get_LLONG_MIN() const;
+	const BigInt get_ULLONG_MAX() const;
 private:
 	short sign;
 	unsigned int numberOfDigits;
-	static const BigInt INT_MAX_VAL;
 	std::vector<short> digits;
+	static const BigInt INT_MAX_VAL;
+	static const BigInt INT_MIN_VAL;
+	static const BigInt UINT_MAX_VAL;
+	static const BigInt LLONG_MAX_VAL;
+	static const BigInt LLONG_MIN_VAL;
+	static const BigInt ULLONG_MAX_VAL;
 };
 
