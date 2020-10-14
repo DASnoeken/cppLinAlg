@@ -23,6 +23,9 @@ public:
 	const std::vector<short> getDigits() const;
 	const short getDigit(int index) const;
 	const short getSign() const;
+	const BigInt get_SHORT_MAX() const;
+	const BigInt get_SHORT_MIN() const;
+	const BigInt get_USHORT_MAX() const;
 	const BigInt get_INT_MAX() const;
 	const BigInt get_INT_MIN() const;
 	const BigInt get_UINT_MAX() const;
@@ -35,6 +38,8 @@ public:
 	void setSign(short sign);
 
 	//Converters
+	short to_SHORT();
+	unsigned short to_USHORT();
 	long long to_LLONG();
 	int to_INT();
 	unsigned int to_UINT();
@@ -49,10 +54,16 @@ public:
 
 	//Friends
 	friend std::ostream& operator <<(std::ostream& os, const BigInt& bi);
+
 private:
 	short sign;
 	unsigned int numberOfDigits;
 	std::vector<short> digits;
+
+	//constants
+	static const BigInt SHORT_MAX_VAL;
+	static const BigInt SHORT_MIN_VAL;
+	static const BigInt USHORT_MAX_VAL;
 	static const BigInt INT_MAX_VAL;
 	static const BigInt INT_MIN_VAL;
 	static const BigInt UINT_MAX_VAL;

@@ -6,6 +6,9 @@
 #include <string>
 #include <array>
 
+const BigInt BigInt::SHORT_MAX_VAL  = BigInt("32767");
+const BigInt BigInt::SHORT_MIN_VAL  = BigInt("-32768");
+const BigInt BigInt::USHORT_MAX_VAL = BigInt("65535");
 const BigInt BigInt::INT_MAX_VAL    = BigInt("2147483647");
 const BigInt BigInt::INT_MIN_VAL    = BigInt("-2147483648");
 const BigInt BigInt::UINT_MAX_VAL   = BigInt("4294967295");
@@ -440,6 +443,41 @@ void BigInt::setSign(short sign)
 	this->sign = sign;
 }
 
+short BigInt::to_SHORT()
+{
+	if (this->compare(SHORT_MAX_VAL) == 1 || this->compare(SHORT_MIN_VAL) == -1) {
+		BigIntException bie("Number out of bounds for SHORT!");
+		std::cout << bie << " " << bie.getWhat() << " Minimum value = " << this->get_SHORT_MIN()
+			<< "\nMax allowed value = " << this->get_SHORT_MAX()
+			<< "\nYou entered: " << *this << ".\n At BigInt::to_SHORT()." << std::endl;
+		throw bie;
+	}
+	short ans = 0;
+	short tens = 1;
+	for (int i = this->getNumberOfDigits() - 1; i >= 0; --i) {
+		ans += (this->getDigit(i) * tens);
+		tens *= 10;
+	}
+	return ans;
+}
+
+unsigned short BigInt::to_USHORT()
+{
+	if (this->getSign() < 0 || this->compare(USHORT_MAX_VAL) == 1) {
+		BigIntException bie("Number out of bounds for USHORT!");
+		std::cout << bie << " " << bie.getWhat() << "\nMax allowed value = " << this->get_SHORT_MAX()
+			<< "\nYou entered: " << *this << ".\n At BigInt::to_USHORT()." << std::endl;
+		throw bie;
+	}
+	unsigned short ans = 0;
+	unsigned short tens = 1;
+	for (int i = this->getNumberOfDigits() - 1; i >= 0; --i) {
+		ans += ((unsigned short) this->getDigit(i) * tens);
+		tens *= 10;
+	}
+	return ans;
+}
+
 long long BigInt::to_LLONG()
 {
 	if (this->compare(LLONG_MAX_VAL) == 1 || this->compare(LLONG_MIN_VAL) == -1) {
@@ -629,6 +667,21 @@ const short BigInt::getDigit(int index) const
 const short BigInt::getSign() const
 {
 	return this->sign;
+}
+
+const BigInt BigInt::get_SHORT_MAX() const
+{
+	return SHORT_MAX_VAL;
+}
+
+const BigInt BigInt::get_SHORT_MIN() const
+{
+	return SHORT_MIN_VAL;
+}
+
+const BigInt BigInt::get_USHORT_MAX() const
+{
+	return USHORT_MAX_VAL;
 }
 
 const BigInt BigInt::get_INT_MAX() const
