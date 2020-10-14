@@ -17,13 +17,16 @@ public:
 	void printNumber(const char* option) const;
 	const short compare(const BigInt& other) const;
 	bool equals(const BigInt& other) const;
+	const BigInt concatZeros(int z);
 
 	const unsigned int getNumberOfDigits() const;
 	const std::vector<short> getDigits() const;
 	const short getSign() const;
+	const BigInt get_INT_MAX() const;
 private:
 	short sign;
 	unsigned int numberOfDigits;
+	static const BigInt INT_MAX_VAL;
 	std::vector<short> digits;
 };
 

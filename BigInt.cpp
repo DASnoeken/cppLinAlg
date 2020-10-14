@@ -6,6 +6,8 @@
 #include <string>
 #include <array>
 
+const BigInt BigInt::INT_MAX_VAL = BigInt("2147483647");
+
 BigInt::BigInt(const char* in)
 {
 	std::string_view input(in);
@@ -16,11 +18,11 @@ BigInt::BigInt(const char* in)
 	else {
 		this->sign = 1;
 	}
-	while (input.at(0) == '0' || input.at(0) == '.' || input.at(0) == ',' || input.at(0) == ' ') {
+	while ((input.at(0) == '0' && input != "0") || input.at(0) == '.' || input.at(0) == ',' || input.at(0) == ' ') {
 		input = std::string_view(input.data() + 1);
 	}
 	int count = 0;
-	for (int i = 0; i < input.size(); i++) {
+	for (unsigned int i = 0; i < input.size(); i++) {
 		while (input.at(i) == '.' || input.at(i) == ',' || input.at(i) == ' ') {
 			count++;
 			i++;
@@ -55,7 +57,7 @@ BigInt::BigInt(int inp)
 		input = std::string_view(input.data() + 1);
 	}
 	int count = 0;
-	for (int i = 0; i < input.size(); i++) {
+	for (unsigned int i = 0; i < input.size(); i++) {
 		while (input.at(i) == '.' || input.at(i) == ',' || input.at(i) == ' ') {
 			count++;
 			i++;
@@ -90,7 +92,7 @@ BigInt::BigInt(long inp)
 		input = std::string_view(input.data() + 1);
 	}
 	int count = 0;
-	for (int i = 0; i < input.size(); i++) {
+	for (unsigned int i = 0; i < input.size(); i++) {
 		while (input.at(i) == '.' || input.at(i) == ',' || input.at(i) == ' ') {
 			count++;
 			i++;
@@ -125,7 +127,7 @@ BigInt::BigInt(short inp)
 		input = std::string_view(input.data() + 1);
 	}
 	int count = 0;
-	for (int i = 0; i < input.size(); i++) {
+	for (unsigned int i = 0; i < input.size(); i++) {
 		while (input.at(i) == '.' || input.at(i) == ',' || input.at(i) == ' ') {
 			count++;
 			i++;
@@ -148,7 +150,7 @@ BigInt::BigInt(const BigInt& bi_old)
 {
 	std::string newInput = "";
 	this->sign = bi_old.getSign();
-	for (int i = 0; i < bi_old.digits.size(); i++) {
+	for (unsigned int i = 0; i < bi_old.digits.size(); i++) {
 		newInput += std::to_string(bi_old.digits.at(i));
 	}
 	std::string_view input(newInput);
@@ -331,12 +333,30 @@ BigInt BigInt::operator*(const BigInt& bi)
 	else {
 		newSign = -1;
 	}
-	std::string answer;
+	BigInt answer("0");
 	std::vector<short> otherDigits = bi.getDigits();
 	std::vector<short>::reverse_iterator riter = this->digits.rbegin();
 	std::vector<short>::reverse_iterator riterOther = otherDigits.rbegin();
-
-	return BigInt("0");
+	std::vector<BigInt> nums; nums.reserve(this->getNumberOfDigits() * bi.getNumberOfDigits());
+	short digit1, digit2, product;
+	std::string finNum;
+	while (riter != digits.rend()) {
+		while (riterOther != otherDigits.rend()) {
+			digit1 = *riter;
+			digit2 = *riterOther;
+			product = digit1 * digit2;
+			finNum += std::to_string(product);
+			nums.emplace_back(BigInt(finNum.c_str()).concatZeros((
+				riterOther - otherDigits.rbegin()) + (riter - digits.rbegin())
+			));
+			++riterOther;
+		}
+		riter++;
+	}
+	for (auto bi : nums) {
+		answer = answer + bi;
+	}
+	return answer;
 }
 
 void BigInt::setDigit(unsigned int& index, int val)
@@ -401,7 +421,7 @@ const short BigInt::compare(const BigInt& other) const //returns 0 when equal, -
 			return 1;
 	}
 	else {
-		for (int i = 0; i < this->getNumberOfDigits(); i++) {
+		for (unsigned int i = 0; i < this->getNumberOfDigits(); i++) {
 			if (this->getDigits().at(i) < other.getDigits().at(i)) {
 				return -1;
 			}
@@ -424,7 +444,7 @@ bool BigInt::equals(const BigInt& other) const
 	if (this->getDigits().size() != other.getDigits().size()) {
 		return false;
 	}
-	for (int i = 0; i < this->getNumberOfDigits(); i++) {
+	for (unsigned int i = 0; i < this->getNumberOfDigits(); i++) {
 		if (this->getDigits().at(i) != other.getDigits().at(i)) {
 			return false;
 		}
@@ -433,6 +453,19 @@ bool BigInt::equals(const BigInt& other) const
 		}
 	}
 	return true;
+}
+
+const BigInt BigInt::concatZeros(int z)
+{
+	std::string ans;
+	ans.reserve(this->numberOfDigits + z);
+	for (auto s : this->digits) {
+		ans += std::to_string(s);
+	}
+	for (int i = 0; i < z; i++) {
+		ans += "0";
+	}
+	return BigInt(ans.c_str());
 }
 
 const unsigned int BigInt::getNumberOfDigits() const
@@ -448,4 +481,9 @@ const std::vector<short> BigInt::getDigits() const
 const short BigInt::getSign() const
 {
 	return this->sign;
+}
+
+const BigInt BigInt::get_INT_MAX() const
+{
+	return INT_MAX_VAL;
 }

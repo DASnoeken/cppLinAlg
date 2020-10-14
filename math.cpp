@@ -50,6 +50,12 @@ int main()
     int i = 31231;
     BigInt bi2 = bi + i;
     bi2.printNumber();
+    bi.get_INT_MAX().printNumber();
+    std::cout << "\n\nTesting operator*" << std::endl;
+    BigInt bis("12");
+    BigInt bis2("10");
+    BigInt bisans = bis * bis2;
+    bisans.printNumber();
 }
 
 //Here is some stuff to find memory leaks
