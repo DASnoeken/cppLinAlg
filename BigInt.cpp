@@ -140,8 +140,9 @@ BigInt BigInt::operator-(const BigInt& bi)
 		return BigInt("0");
 	}
 	std::string answer;
+	std::vector<short> localDigits = this->digits;
 	std::vector<short> otherDigits = bi.getDigits();
-	std::vector<short>::reverse_iterator riter = this->digits.rbegin();
+	std::vector<short>::reverse_iterator riter = localDigits.rbegin();
 	std::vector<short>::reverse_iterator riterOther = otherDigits.rbegin();
 	short digit1, digit2, diff, newsign;
 	unsigned int index;
@@ -149,7 +150,7 @@ BigInt BigInt::operator-(const BigInt& bi)
 	if (this->compare(bi) > 0) {		//case answer will be positive
 		
 		newsign = 1;
-		while (riter != this->digits.rend() && riterOther != otherDigits.rend()) {
+		while (riter != localDigits.rend() && riterOther != otherDigits.rend()) {
 			digit1 = *riter;
 			digit2 = *riterOther;
 			if (digit1 >= digit2) {
@@ -160,9 +161,9 @@ BigInt BigInt::operator-(const BigInt& bi)
 				continue;
 			}
 			else {
-				index = riter - this->digits.rbegin() - 1;
-				if (this->digits.at(index) > 0) {
-					this->digits.at(index)--;
+				index = riter - localDigits.rbegin() - 1;
+				if (localDigits.at(index) > 0) {
+					localDigits.at(index)--;
 					diff = 10 + digit1 - digit2;
 					std::string sumstring = std::to_string(diff);
 					answer = sumstring + answer;
@@ -170,11 +171,11 @@ BigInt BigInt::operator-(const BigInt& bi)
 					continue;
 				}
 				else {
-					while (index >= 0 && this->digits.at(index) == 0) {
+					while (index >= 0 && localDigits.at(index) == 0) {
 						this->setDigit(index, 9);
 						index--;
 					}
-					this->digits.at(index)--;
+					localDigits.at(index)--;
 					diff = 10 + digit1 - digit2;
 					std::string sumstring = std::to_string(diff);
 					answer = sumstring + answer;
@@ -183,7 +184,7 @@ BigInt BigInt::operator-(const BigInt& bi)
 				}
 			}
 		}
-		while (riter != this->digits.rend()) {
+		while (riter != localDigits.rend()) {
 			std::string sumstring = std::to_string(*riter);
 			std::cout << sumstring << std::endl;
 			answer = sumstring + answer;
@@ -197,7 +198,7 @@ BigInt BigInt::operator-(const BigInt& bi)
 	}
 	else {		// case answer will be negative
 		newsign = -1;
-		while (riter != this->digits.rend() && riterOther != otherDigits.rend()) {
+		while (riter != localDigits.rend() && riterOther != otherDigits.rend()) {
 			digit2 = *riter;
 			digit1 = *riterOther;
 			if (digit1 >= digit2) {
@@ -208,9 +209,9 @@ BigInt BigInt::operator-(const BigInt& bi)
 				continue;
 			}
 			else {
-				index = riter - this->digits.rbegin() - 1;
-				if (this->digits.at(index) > 0) {
-					this->digits.at(index)--;
+				index = riter - localDigits.rbegin() - 1;
+				if (localDigits.at(index) > 0) {
+					localDigits.at(index)--;
 					diff = 10 + digit1 - digit2;
 					std::string sumstring = std::to_string(diff);
 					answer = sumstring + answer;
@@ -218,11 +219,11 @@ BigInt BigInt::operator-(const BigInt& bi)
 					continue;
 				}
 				else {
-					while (index >= 0 && this->digits.at(index) == 0) {
+					while (index >= 0 && localDigits.at(index) == 0) {
 						this->setDigit(index,9);
 						index--;
 					}
-					this->digits.at(index)--;
+					localDigits.at(index)--;
 					diff = 10 + digit1 - digit2;
 					std::string sumstring = std::to_string(diff);
 					answer = sumstring + answer;
@@ -231,7 +232,7 @@ BigInt BigInt::operator-(const BigInt& bi)
 				}
 			}
 		}
-		while (riter != this->digits.rend()) {
+		while (riter != localDigits.rend()) {
 			std::string sumstring = std::to_string(*riter);
 			answer = sumstring + answer;
 			++riter;

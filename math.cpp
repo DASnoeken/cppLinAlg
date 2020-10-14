@@ -55,6 +55,7 @@ int main()
     BigInt b3 = bi - b1;
     b3.printNumber();
     b3.printNumber("format");
+    bi.printNumber();
 }
 
 //Here is some stuff to find memory leaks
