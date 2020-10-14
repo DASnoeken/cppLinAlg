@@ -367,6 +367,15 @@ BigInt BigInt::operator*(const BigInt& bi)
 	return answer;
 }
 
+BigInt BigInt::operator^(const BigInt& bi)
+{
+	BigInt ans("1");
+	for (BigInt i("0"); i.compare(bi)<0; i = i + 1) {
+		ans = ans * *this;
+	}
+	return ans;
+}
+
 void BigInt::setDigit(unsigned int& index, int val)
 {
 	if (val > 9 || val < 0) {
@@ -519,4 +528,14 @@ const BigInt BigInt::get_LLONG_MIN() const
 const BigInt BigInt::get_ULLONG_MAX() const
 {
 	return ULLONG_MAX_VAL;
+}
+
+std::ostream& operator <<(std::ostream& os, const BigInt& bi) {
+	if (bi.getSign() == -1) {
+		os << "-";
+	}
+	for (unsigned int i = 0; i < bi.getNumberOfDigits(); i++) {
+		os << bi.getDigits().at(i);
+	}
+	return os;
 }

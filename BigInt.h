@@ -12,6 +12,7 @@ public:
 	BigInt operator+(const BigInt& bi);
 	BigInt operator-(const BigInt& bi);
 	BigInt operator*(const BigInt& bi);
+	BigInt operator^(const BigInt& bi);
 	void setDigit(unsigned int& index, int val);
 	void printNumber() const;
 	void printNumber(const char* option) const;
@@ -28,6 +29,8 @@ public:
 	const BigInt get_LLONG_MAX() const;
 	const BigInt get_LLONG_MIN() const;
 	const BigInt get_ULLONG_MAX() const;
+
+	friend std::ostream& operator <<(std::ostream& os, const BigInt& bi);
 private:
 	short sign;
 	unsigned int numberOfDigits;

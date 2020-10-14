@@ -56,6 +56,12 @@ int main()
     BigInt bis2("11");
     BigInt bisans = bis * bis2;
     bisans.printNumber();
+    std::cout << "\n\nTesting operator^" << std::endl;
+    BigInt bip("3");
+    BigInt bip2("4");
+    BigInt bipans = bip ^ bip2;
+    std::cout << (3 * 3 * 3 * 3) << " = " << bipans << std::endl;
+    std::cout << "Some BigInt: " << BigInt("319208385719841092417498324") << std::endl;
 }
 
 //Here is some stuff to find memory leaks
