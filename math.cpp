@@ -53,7 +53,7 @@ int main()
     bi.get_INT_MAX().printNumber();
     std::cout << "\n\nTesting operator*" << std::endl;
     BigInt bis("12");
-    BigInt bis2("10");
+    BigInt bis2("11");
     BigInt bisans = bis * bis2;
     bisans.printNumber();
 }

@@ -346,6 +346,7 @@ BigInt BigInt::operator*(const BigInt& bi)
 	short digit1, digit2, product;
 	std::string finNum;
 	while (riter != digits.rend()) {
+		riterOther = otherDigits.rbegin();
 		while (riterOther != otherDigits.rend()) {
 			digit1 = *riter;
 			digit2 = *riterOther;
@@ -355,10 +356,12 @@ BigInt BigInt::operator*(const BigInt& bi)
 				riterOther - otherDigits.rbegin()) + (riter - digits.rbegin())
 			));
 			++riterOther;
+			finNum = "";
 		}
-		riter++;
+		++riter;
 	}
 	for (auto bi : nums) {
+		bi.printNumber();
 		answer = answer + bi;
 	}
 	return answer;
