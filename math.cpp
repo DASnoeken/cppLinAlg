@@ -81,7 +81,12 @@ int main()
     BigInt bidans2 = BigInt(12) / BigInt(13);
     std::cout << "Actual 12/13 = " << 12 / 13 << std::endl;
     std::cout << "12/13 = " << bidans2 << std::endl;
-    
+
+    BigInt bibase16("1234ABCDEF313", (short) 16);
+    std::cout << "bibase16 = " <<bibase16 << std::endl;
+    BigInt bibase16sum = bibase16 + bibase16;
+    BigInt bibase16diff = bibase16 - bibase16;
+    std::cout << bibase16sum << "    " << bibase16diff << std::endl;
 }
 
 //Here is some stuff to find memory leaks

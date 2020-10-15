@@ -3,8 +3,8 @@
 
 #include <charconv>
 #include <iostream>
-#include <string>
-#include <array>
+#include <regex>
+#include <cctype>
 
 const BigInt BigInt::SHORT_MAX_VAL  = BigInt("32767");
 const BigInt BigInt::SHORT_MIN_VAL  = BigInt("-32768");
@@ -45,6 +45,51 @@ BigInt::BigInt(const char* in)
 		short s;
 		std::from_chars_result fsr = std::from_chars(input.data(), input.data() + 1, s);
 		input = std::string_view(input.data() + 1);
+		this->digits.emplace_back(s);
+	}
+}
+
+BigInt::BigInt(const char* in, short inbase)
+{
+	this->base = inbase;
+	std::string_view input(in);
+	if (input.at(0) == '-') {
+		this->sign = -1;
+		input = std::string_view(input.data() + 1);
+	}
+	else {
+		this->sign = 1;
+	}
+	while ((input.at(0) == '0' && input != "0") || input.at(0) == '.' || input.at(0) == ',' || input.at(0) == ' ') {
+		input = std::string_view(input.data() + 1);
+	}
+	int count = 0;
+	for (unsigned int i = 0; i < input.size(); i++) {
+		while (input.at(i) == '.' || input.at(i) == ',' || input.at(i) == ' ') {
+			count++;
+			i++;
+		}
+	}
+	this->numberOfDigits = input.size() - count;
+	this->digits.reserve(this->numberOfDigits);
+	for (unsigned int i = 0; i < this->numberOfDigits; i++) {
+		while (input.at(0) == '.' || input.at(0) == ',' || input.at(0) == ' ') {
+			input = std::string_view(input.data() + 1);
+		}
+		short s;
+		if (!isdigit(input.at(0))) {
+			s = 10 + toupper(input.at(0)) - 'A';
+			input = std::string_view(input.data() + 1);
+			if (s > this->base) {
+				BigIntException bie("Invalid input for base!");
+				std::cout << bie << " " << bie.getWhat() << " At BigInt::BigInt(const char* in, short inbase)." << std::endl;
+				throw bie;
+			}
+		}
+		else {
+			std::from_chars_result fsr = std::from_chars(input.data(), input.data() + 1, s);
+			input = std::string_view(input.data() + 1);
+		}
 		this->digits.emplace_back(s);
 	}
 }
@@ -194,8 +239,9 @@ BigInt BigInt::operator+(const BigInt& bi)
 		digit1 = *riter;
 		digit2 = *riterOther;
 		sum = digit1 + digit2 + carry;
+		//std::cout << digit1 << " + " << digit2 << " + " << carry << " = " << sum << std::endl;
 		std::string sumstring = std::to_string(sum);
-		if (sum < 10) {
+		if (sum < this->base) {
 			answer = sumstring + answer;
 			carry = 0;
 		}
@@ -217,7 +263,7 @@ BigInt BigInt::operator+(const BigInt& bi)
 		answer = sumstring + answer;
 		++riterOther;
 	}
-	BigInt ans = answer.c_str();
+	BigInt ans(answer.c_str(),this->base);
 	ans.setSign(newsign);
 	return ans;
 }
@@ -252,7 +298,7 @@ BigInt BigInt::operator-(const BigInt& bi)
 				index = localDigits.size() - (riter - localDigits.rbegin()) - 2;
 				if (localDigits.at(index) > 0) {
 					localDigits.at(index)--;
-					diff = 10 + digit1 - digit2;
+					diff = this->base + digit1 - digit2;
 					std::string sumstring = std::to_string(diff);
 					answer = sumstring + answer;
 					++riter; ++riterOther;
@@ -260,11 +306,11 @@ BigInt BigInt::operator-(const BigInt& bi)
 				}
 				else {
 					while (index >= 0 && localDigits.at(index) == 0) {
-						localDigits.at(index) = 9;
+						localDigits.at(index) = this->base-1;
 						index--;
 					}
 					localDigits.at(index)--;
-					diff = 10 + digit1 - digit2;
+					diff = this->base + digit1 - digit2;
 					std::string sumstring = std::to_string(diff);
 					answer = sumstring + answer;
 					++riter; ++riterOther;
@@ -296,10 +342,10 @@ BigInt BigInt::operator-(const BigInt& bi)
 				continue;
 			}
 			else {
-				index = riter - localDigits.rbegin() - 1;
+				index = localDigits.size() - (riter - localDigits.rbegin()) - 2;
 				if (localDigits.at(index) > 0) {
 					localDigits.at(index)--;
-					diff = 10 + digit1 - digit2;
+					diff = this->base + digit1 - digit2;
 					std::string sumstring = std::to_string(diff);
 					answer = sumstring + answer;
 					++riter; ++riterOther;
@@ -307,7 +353,7 @@ BigInt BigInt::operator-(const BigInt& bi)
 				}
 				else {
 					while (index >= 0 && localDigits.at(index) == 0) {
-						this->setDigit(index,9);
+						this->setDigit(index, this->base - 1);
 						index--;
 					}
 					localDigits.at(index)--;
@@ -555,8 +601,21 @@ void BigInt::printNumber() const
 	if (this->sign == -1) {
 		std::cout << "-";
 	}
-	for (unsigned int i = 0; i < this->getNumberOfDigits(); i++) {
-		std::cout << this->getDigits().at(i);
+	if (this->base < 10) {
+		for (unsigned int i = 0; i < this->getNumberOfDigits(); i++) {
+			std::cout << this->getDigits().at(i);
+		}
+	}
+	else {
+		for (unsigned int i = 0; i < this->getNumberOfDigits(); i++) {
+			if (this->getDigits().at(i) < 10) {
+				std::cout << this->getDigits().at(i);
+			}
+			else {
+				char put = this->getDigits().at(i) - 10 + 'A';
+				std::cout << (put);
+			}
+		}
 	}
 	std::cout << std::endl;
 }
@@ -669,6 +728,11 @@ const short BigInt::getSign() const
 	return this->sign;
 }
 
+const short BigInt::getBase() const
+{
+	return this->base;
+}
+
 const BigInt BigInt::get_SHORT_MAX() const
 {
 	return SHORT_MAX_VAL;
@@ -718,8 +782,21 @@ std::ostream& operator <<(std::ostream& os, const BigInt& bi) {
 	if (bi.getSign() == -1) {
 		os << "-";
 	}
-	for (unsigned int i = 0; i < bi.getNumberOfDigits(); i++) {
-		os << bi.getDigits().at(i);
+	if (bi.getBase() <= 10) {
+		for (unsigned int i = 0; i < bi.getNumberOfDigits(); i++) {
+			os << bi.getDigits().at(i);
+		}
+	}
+	else {
+		for (unsigned int i = 0; i < bi.getNumberOfDigits(); i++) {
+			if (bi.getDigits().at(i) < 10) {
+				os << bi.getDigits().at(i);
+			}
+			else {
+				char put = bi.getDigits().at(i) - 10 + 'A';
+				os << (put);
+			}
+		}
 	}
 	return os;
 }

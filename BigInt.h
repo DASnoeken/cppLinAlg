@@ -6,6 +6,7 @@ class BigInt
 public:
 	//Constructors
 	BigInt(const char* in);
+	BigInt(const char* in, short inbase);
 	BigInt(int in);
 	BigInt(long in);
 	BigInt(short in);
@@ -23,6 +24,7 @@ public:
 	const std::vector<short> getDigits() const;
 	const short getDigit(int index) const;
 	const short getSign() const;
+	const short getBase() const;
 	const BigInt get_SHORT_MAX() const;
 	const BigInt get_SHORT_MIN() const;
 	const BigInt get_USHORT_MAX() const;
@@ -59,6 +61,7 @@ private:
 	short sign;
 	unsigned int numberOfDigits;
 	std::vector<short> digits;
+	short base = 10;
 
 	//constants
 	static const BigInt SHORT_MAX_VAL;
