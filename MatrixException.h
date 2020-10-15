@@ -5,7 +5,7 @@ class MatrixException: public std::exception
 {
 public:
 	MatrixException(const char* name);
-	const char* getWhat();
+	const char* getWhat() const;
 	std::string toString();
 
 	friend std::ostream& operator<<(std::ostream& os, const MatrixException& me);

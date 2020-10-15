@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Matrix.h"
 #include "MatrixException.h"
+#include "BigIntException.h"
 #include "BigInt.h"
 
 int main()
@@ -42,51 +43,61 @@ int main()
     catch (MatrixException me) {
         std::cout << me << "Exception caught!" << std::endl;
     }
-    std::cout << "Test BigInt class" << std::endl;
-    const char* biIn = "7894561315345548498498615615164897894841321312565498789784655465135111303110123151301051354848948351132135157984561231";
-    BigInt bi(biIn);
-    bi.printNumber();
-    int i = 31231;
-    BigInt bi2 = bi + i;
-    bi2.printNumber();
-    bi.get_INT_MAX().printNumber();
-    std::cout << "\n\nTesting operator*" << std::endl;
-    BigInt bis("12");
-    BigInt bis2("11");
-    BigInt bisans = bis * bis2;
-    bisans.printNumber();
-    std::cout << "\n\nTesting operator^" << std::endl;
-    BigInt bip("3");
-    BigInt bip2("4");
-    BigInt bipans = bip ^ bip2;
-    std::cout << (3 * 3 * 3 * 3) << " = " << bipans << std::endl;
-    std::cout << "Some BigInt: " << BigInt("319208385719841092417498324") << std::endl;
-    long long lb = bipans.to_LLONG();
-    std::cout << bipans << " = " << lb << std::endl;
+    try {
+        std::cout << "Test BigInt class" << std::endl;
+        const char* biIn = "7894561315345548498498615615164897894841321312565498789784655465135111303110123151301051354848948351132135157984561231";
+        BigInt bi(biIn);
+        bi.printNumber();
+        int i = 31231;
+        BigInt bi2 = bi + i;
+        bi2.printNumber();
+        bi.get_INT_MAX().printNumber();
+        std::cout << "\n\nTesting operator*" << std::endl;
+        BigInt bis("12");
+        BigInt bis2("11");
+        BigInt bisans = bis * bis2;
+        bisans.printNumber();
 
-    std::cout << "\n\nTesting operator-" << std::endl;
-    BigInt test = BigInt(123) - BigInt(25);
-    std::cout << "123 - 25 = " << test << std::endl;
-    BigInt test2 = BigInt("9999999999999999999999999999999999999999") - BigInt("3211233213561234821342511");
-    std::cout << "9999999999999999999999999999999999999999 - 3211233213561234821342511 = " << test2 << std::endl;
-    BigInt test3 = BigInt("123123123123123123123123123123123123123123123123") - BigInt("246246246246246246");
-    std::cout << "123123123123123123123123123123123123123123123123 - 246246246246246246 = " << test3 << std::endl;
-    std::cout << "\n\nTesting operator/" << std::endl;
-    BigInt bid("13");
-    BigInt bid2("3");
-    BigInt bidans = bid / bid2;
-    std::cout << "Actual 13/3 = " << 13 / 3 << std::endl;
-    std::cout << bid << "/" << bid2 << " = " << bidans << std::endl;
+        std::cout << "\n\nTesting operator^" << std::endl;
+        BigInt bip("3");
+        BigInt bip2("4");
+        BigInt bipans = bip ^ bip2;
+        std::cout << (3 * 3 * 3 * 3) << " = " << bipans << std::endl;
+        std::cout << "Some BigInt: " << BigInt("319208385719841092417498324") << std::endl;
+        long long lb = bipans.to_LLONG();
+        std::cout << bipans << " = " << lb << std::endl;
 
-    BigInt bidans2 = BigInt(12) / BigInt(13);
-    std::cout << "Actual 12/13 = " << 12 / 13 << std::endl;
-    std::cout << "12/13 = " << bidans2 << std::endl;
+        std::cout << "\n\nTesting operator-" << std::endl;
+        BigInt test = BigInt(123) - BigInt(25);
+        std::cout << "123 - 25 = " << test << std::endl;
+        BigInt test2 = BigInt("9999999999999999999999999999999999999999") - BigInt("3211233213561234821342511");
+        std::cout << "9999999999999999999999999999999999999999 - 3211233213561234821342511 = " << test2 << std::endl;
+        BigInt test3 = BigInt("123123123123123123123123123123123123123123123123") - BigInt("246246246246246246");
+        std::cout << "123123123123123123123123123123123123123123123123 - 246246246246246246 = " << test3 << std::endl;
+        
+        std::cout << "\n\nTesting operator/" << std::endl;
+        BigInt bid(13);
+        BigInt bid2(3);
+        BigInt bidans = bid / bid2;
+        
+        std::cout << "Actual 13/3 = " << 13 / 3 << std::endl;
+        std::cout << bid << "/" << bid2 << " = " << bidans << std::endl;
 
-    BigInt bibase16("1234ABCDEF313", (short) 16);
-    std::cout << "bibase16 = " <<bibase16 << std::endl;
-    BigInt bibase16sum = bibase16 + bibase16;
-    BigInt bibase16diff = bibase16 - bibase16;
-    std::cout << bibase16sum << "    " << bibase16diff << std::endl;
+        BigInt bidans2 = BigInt(12) / BigInt(13);
+        std::cout << "Actual 12/13 = " << 12 / 13 << std::endl;
+        std::cout << "12/13 = " << bidans2 << std::endl;
+        std::cout << "\nOther bases test" << std::endl;
+
+        BigInt bibase16("1234ABCDEF313", (short)16);
+        std::cout << "bibase16 = " << bibase16 << std::endl;
+        BigInt bibase16sum = (bibase16 + bibase16);
+        bibase16sum.printDigits();
+        std::cout << bibase16sum << std::endl;
+    }
+    catch (BigIntException& bie) {
+        std::cout << "\033[1;31mError!" << " " << bie.getWhat() << "\033[0m" << std::endl;
+    }
+    //std::cout << bibase16sum << "    " << bibase16diff << std::endl;
 }
 
 //Here is some stuff to find memory leaks

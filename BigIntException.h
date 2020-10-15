@@ -5,7 +5,7 @@ class BigIntException : public std::exception
 {
 public:
 	BigIntException(const char* name);
-	const char* getWhat();
+	const char* getWhat() const;
 	std::string toString();
 	friend std::ostream& operator<<(std::ostream& os, const BigIntException& bie);
 private:

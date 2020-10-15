@@ -4,7 +4,7 @@ MatrixException::MatrixException(const char* name):_what(name)
 {
 }
 
-const char* MatrixException::getWhat()
+const char* MatrixException::getWhat() const
 {
 	return this->_what.c_str();
 }

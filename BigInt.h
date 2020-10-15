@@ -46,10 +46,12 @@ public:
 	int to_INT();
 	unsigned int to_UINT();
 	unsigned long long to_ULLONG();
+	std::string toString() const;
 
 	//Other functions
 	void printNumber() const;
 	void printNumber(const char* option) const;
+	void printDigits() const;
 	const short compare(const BigInt& other) const;
 	bool equals(const BigInt& other) const;
 	const BigInt concatZeros(int z);
@@ -61,7 +63,8 @@ private:
 	short sign;
 	unsigned int numberOfDigits;
 	std::vector<short> digits;
-	short base = 10;
+	short base;
+	std::string strRep;
 
 	//constants
 	static const BigInt SHORT_MAX_VAL;

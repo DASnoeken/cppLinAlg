@@ -4,7 +4,7 @@ BigIntException::BigIntException(const char* name):_what(name)
 {
 }
 
-const char* BigIntException::getWhat()
+const char* BigIntException::getWhat() const
 {
 	return this->_what.c_str();
 }
@@ -16,5 +16,5 @@ std::string BigIntException::toString()
 
 std::ostream& operator<<(std::ostream& os, const BigIntException& bie)
 {
-	return (os << "\033[1;31mERROR![0m");
+	return (os << "\033[1;31mError!\033[0m");
 }

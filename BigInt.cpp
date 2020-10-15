@@ -18,6 +18,7 @@ const BigInt BigInt::ULLONG_MAX_VAL = BigInt("18446744073709551615");
 
 BigInt::BigInt(const char* in)
 {
+	this->base = 10;
 	std::string_view input(in);
 	if (input.at(0) == '-') {
 		this->sign = -1;
@@ -36,6 +37,7 @@ BigInt::BigInt(const char* in)
 			i++;
 		}
 	}
+	this->strRep = input;
 	this->numberOfDigits = input.size() - count;
 	this->digits.reserve(this->numberOfDigits);
 	for (unsigned int i = 0; i < this->numberOfDigits; i++) {
@@ -70,6 +72,7 @@ BigInt::BigInt(const char* in, short inbase)
 			i++;
 		}
 	}
+	this->strRep = input;
 	this->numberOfDigits = input.size() - count;
 	this->digits.reserve(this->numberOfDigits);
 	for (unsigned int i = 0; i < this->numberOfDigits; i++) {
@@ -81,8 +84,10 @@ BigInt::BigInt(const char* in, short inbase)
 			s = 10 + toupper(input.at(0)) - 'A';
 			input = std::string_view(input.data() + 1);
 			if (s > this->base) {
-				BigIntException bie("Invalid input for base!");
-				std::cout << bie << " " << bie.getWhat() << " At BigInt::BigInt(const char* in, short inbase)." << std::endl;
+				std::string msg = "Invalid input for base! At BigInt::BigInt(const char* in, short inbase). Base = "
+					+ std::to_string(this->base)
+					+ ", but should be at least: "+std::to_string(s);
+				BigIntException bie(msg.c_str());
 				throw bie;
 			}
 		}
@@ -96,6 +101,7 @@ BigInt::BigInt(const char* in, short inbase)
 
 BigInt::BigInt(int inp)
 {
+	this->base = 10;
 	if (inp < 0) {
 		this->sign = -1;
 		inp *= -1;
@@ -116,6 +122,7 @@ BigInt::BigInt(int inp)
 			i++;
 		}
 	}
+	this->strRep = input;
 	this->numberOfDigits = input.size() - count;
 	this->digits.reserve(this->numberOfDigits);
 	for (unsigned int i = 0; i < this->numberOfDigits; i++) {
@@ -131,6 +138,7 @@ BigInt::BigInt(int inp)
 
 BigInt::BigInt(long inp)
 {
+	this->base = 10;
 	if (inp < 0) {
 		this->sign = -1;
 		inp *= -1;
@@ -151,6 +159,7 @@ BigInt::BigInt(long inp)
 			i++;
 		}
 	}
+	this->strRep = input;
 	this->numberOfDigits = input.size() - count;
 	this->digits.reserve(this->numberOfDigits);
 	for (unsigned int i = 0; i < this->numberOfDigits; i++) {
@@ -166,6 +175,7 @@ BigInt::BigInt(long inp)
 
 BigInt::BigInt(short inp)
 {
+	this->base = 10;
 	if (inp < 0) {
 		this->sign = -1;
 		inp *= -1;
@@ -186,6 +196,7 @@ BigInt::BigInt(short inp)
 			i++;
 		}
 	}
+	this->strRep = input;
 	this->numberOfDigits = input.size() - count;
 	this->digits.reserve(this->numberOfDigits);
 	for (unsigned int i = 0; i < this->numberOfDigits; i++) {
@@ -202,23 +213,45 @@ BigInt::BigInt(short inp)
 BigInt::BigInt(const BigInt& bi_old)
 {
 	std::string newInput = "";
+	this->base = bi_old.getBase();
 	this->sign = bi_old.getSign();
 	for (unsigned int i = 0; i < bi_old.digits.size(); i++) {
-		newInput += std::to_string(bi_old.digits.at(i));
+		if (bi_old.getDigit(i) <= 9) {
+			newInput += std::to_string(bi_old.getDigit(i));
+		}
+		else {
+			char put = bi_old.getDigit(i) - 10 + 'A';
+			newInput += put;
+		}
 	}
 	std::string_view input(newInput);
-	this->numberOfDigits = input.size();
+	this->strRep = bi_old.toString();
+	this->numberOfDigits = bi_old.getNumberOfDigits();
 	this->digits.reserve(this->numberOfDigits + 1);
 	for (unsigned int i = 0; i < this->numberOfDigits; i++) {
 		short s;
-		std::from_chars_result fsr = std::from_chars(input.data(), input.data() + 1, s);
-		input = std::string_view(input.data() + 1);
+		if (!isdigit(input.at(0))) {
+			s = 10 + toupper(input.at(0)) - 'A';
+			input = std::string_view(input.data() + 1);
+			if (s > this->base) {
+				std::string msg = "Invalid input for base! At BigInt::BigInt(const char* in, short inbase). Base = "
+					+ std::to_string(this->base)
+					+ ", but should be at least: " + std::to_string(s);
+				BigIntException bie(msg.c_str());
+				throw bie;
+			}
+		}
+		else {
+			std::from_chars_result fsr = std::from_chars(input.data(), input.data() + 1, s);
+			input = std::string_view(input.data() + 1);
+		}
 		this->digits.emplace_back(s);
 	}
 }
 
 BigInt BigInt::operator+(const BigInt& bi)
 {
+	
 	int newsign = 1;
 	if (this->getSign() < 0 && bi.getSign() > 0) {
 		return BigInt(bi) - *this;
@@ -239,8 +272,28 @@ BigInt BigInt::operator+(const BigInt& bi)
 		digit1 = *riter;
 		digit2 = *riterOther;
 		sum = digit1 + digit2 + carry;
-		//std::cout << digit1 << " + " << digit2 << " + " << carry << " = " << sum << std::endl;
-		std::string sumstring = std::to_string(sum);
+		std::string sumstring;
+		if (sum < 10) {
+			sumstring = std::to_string(sum);
+		}
+		else {
+			char asciichar = (char)(sum - 10 + 'A');
+			if (sum > this->base) {
+				asciichar -= this->base;
+				
+				if (sum > this->base + 9) {
+					sumstring = asciichar;
+					sumstring = "1" + sumstring;
+				}
+				else {
+					sumstring = "1" + std::to_string(sum - this->base);
+				}
+			}
+			else {
+				sumstring = asciichar;
+			}
+		}
+
 		if (sum < this->base) {
 			answer = sumstring + answer;
 			carry = 0;
@@ -422,7 +475,6 @@ BigInt BigInt::operator*(const BigInt& bi)
 		++riter;
 	}
 	for (auto bi : nums) {
-		bi.printNumber();
 		answer = answer + bi;
 	}
 	return answer;
@@ -440,8 +492,7 @@ BigInt BigInt::operator^(const BigInt& bi)
 BigInt BigInt::operator/(const BigInt& bi)
 {
 	if (bi.equals(0)) {
-		BigIntException bie("Division by 0!");
-		std::cout << bie << " " << bie.getWhat() << " At BigInt::operator/(const BigInt& bi)" << std::endl;
+		BigIntException bie("Division by 0! At BigInt::operator/(const BigInt& bi)");
 		throw bie;
 	}
 	else if (this->equals(0)) {
@@ -460,7 +511,7 @@ BigInt BigInt::operator/(const BigInt& bi)
 	if (numerator.compare(denominator) > 0) {
 		while (numerator.compare(denominator) >= 0) {
 			numerator = numerator - denominator;
-			ans = ans + 1;
+			ans = ans + BigInt("1");
 		}
 		remainder = numerator;
 	}
@@ -476,9 +527,8 @@ BigInt BigInt::operator/(const BigInt& bi)
 
 void BigInt::setDigit(unsigned int& index, short val)
 {
-	if (val > 9 || val < 0) {
-		BigIntException bie("Invalid digit value!");
-		std::cout << bie << " " << bie.getWhat() << " At BigInt::setDigit(unsigned int& index, unsigned short& val)." << std::endl;
+	if (val > this->base - 1 || val < 0) {
+		BigIntException bie("Invalid digit value! At BigInt::setDigit(unsigned int& index, unsigned short& val).");
 		throw bie;
 	}
 	this->digits.at(index) = val;
@@ -492,10 +542,10 @@ void BigInt::setSign(short sign)
 short BigInt::to_SHORT()
 {
 	if (this->compare(SHORT_MAX_VAL) == 1 || this->compare(SHORT_MIN_VAL) == -1) {
-		BigIntException bie("Number out of bounds for SHORT!");
-		std::cout << bie << " " << bie.getWhat() << " Minimum value = " << this->get_SHORT_MIN()
-			<< "\nMax allowed value = " << this->get_SHORT_MAX()
-			<< "\nYou entered: " << *this << ".\n At BigInt::to_SHORT()." << std::endl;
+		std::string msg = std::string("Number out of bounds for SHORT! Minimum value = -32768\nMax allowed value = 32767\nYou entered: ") 
+			+ this->toString()
+			+ std::string(".\n At BigInt::to_SHORT().");
+		BigIntException bie(msg.c_str());
 		throw bie;
 	}
 	short ans = 0;
@@ -510,9 +560,10 @@ short BigInt::to_SHORT()
 unsigned short BigInt::to_USHORT()
 {
 	if (this->getSign() < 0 || this->compare(USHORT_MAX_VAL) == 1) {
-		BigIntException bie("Number out of bounds for USHORT!");
-		std::cout << bie << " " << bie.getWhat() << "\nMax allowed value = " << this->get_SHORT_MAX()
-			<< "\nYou entered: " << *this << ".\n At BigInt::to_USHORT()." << std::endl;
+		std::string msg = std::string("Number out of bounds for USHORT! Minimum value = 0\nMax allowed value = 65535\nYou entered: ")
+			+ this->toString()
+			+ std::string(".\n At BigInt::to_USHORT().");
+		BigIntException bie(msg.c_str());
 		throw bie;
 	}
 	unsigned short ans = 0;
@@ -527,10 +578,10 @@ unsigned short BigInt::to_USHORT()
 long long BigInt::to_LLONG()
 {
 	if (this->compare(LLONG_MAX_VAL) == 1 || this->compare(LLONG_MIN_VAL) == -1) {
-		BigIntException bie("Number out of bounds for LLONG!");
-		std::cout << bie << " " << bie.getWhat() << " Minimum value = " << this->get_LLONG_MIN() 
-			<< "\nMax allowed value = " << this->get_LLONG_MAX() 
-			<< "\nYou entered: " << *this << ".\n At BigInt::to_LLONG()." << std::endl;
+		std::string msg = std::string("Number out of bounds for LLONG! Minimum value = "+LLONG_MIN_VAL.toString()+"\nMax allowed value = "+LLONG_MAX_VAL.toString()+"\nYou entered: ")
+			+ this->toString()
+			+ std::string(".\n At BigInt::to_LLONG().");
+		BigIntException bie(msg.c_str());
 		throw bie;
 	}
 	long long ans = 0;
@@ -545,10 +596,10 @@ long long BigInt::to_LLONG()
 int BigInt::to_INT()
 {
 	if (this->compare(INT_MAX_VAL) == 1 || this->compare(INT_MIN_VAL) == -1) {
-		BigIntException bie("Number out of bounds for INT!");
-		std::cout << bie << " " << bie.getWhat() << " Minimum value = " << this->get_INT_MIN()
-			<< " Max allowed value = " << this->get_INT_MAX() << "\nYou entered: " << *this
-			<< ".\n At BigInt::to_INT()." << std::endl;
+		std::string msg = std::string("Number out of bounds for INT! Minimum value = " + INT_MIN_VAL.toString() + "\nMax allowed value = " + INT_MAX_VAL.toString() + "\nYou entered: ")
+			+ this->toString()
+			+ std::string(".\n At BigInt::to_INT().");
+		BigIntException bie(msg.c_str());
 		throw bie;
 	}
 	int ans = 0;
@@ -563,10 +614,10 @@ int BigInt::to_INT()
 unsigned int BigInt::to_UINT()
 {
 	if (this->getSign() < 0 || this->compare(UINT_MAX_VAL) == 1) {
-		BigIntException bie("Number out of bounds for UINT!");
-		std::cout << bie << " " << bie.getWhat() << " Minimum value = 0"
-			<< " Max allowed value = " << this->get_UINT_MAX() << "\nYou entered: " << *this
-			<< ".\n At BigInt::to_UINT()." << std::endl;
+		std::string msg = std::string("Number out of bounds for UINT! Minimum value = 0\nMax allowed value = " + UINT_MAX_VAL.toString() + "\nYou entered: ")
+			+ this->toString()
+			+ std::string(".\n At BigInt::to_UINT().");
+		BigIntException bie(msg.c_str());
 		throw bie;
 	}
 	unsigned int ans = 0;
@@ -581,10 +632,10 @@ unsigned int BigInt::to_UINT()
 unsigned long long BigInt::to_ULLONG()
 {
 	if (this->getSign() < 0 || this->compare(ULLONG_MAX_VAL) == 1) {
-		BigIntException bie("Number out of bounds for ULLONG!");
-		std::cout << bie << " " << bie.getWhat() << " Minimum value = 0"
-			<< " Max allowed value = " << this->get_ULLONG_MAX() << "\nYou entered: " << *this
-			<< ".\n At BigInt::to_ULLONG()." << std::endl;
+		std::string msg = std::string("Number out of bounds for ULLONG! Minimum value = 0\nMax allowed value = " + ULLONG_MAX_VAL.toString() + "\nYou entered: ")
+			+ this->toString()
+			+ std::string(".\n At BigInt::to_ULLONG().");
+		BigIntException bie(msg.c_str());
 		throw bie;
 	}
 	unsigned long long ans = 0;
@@ -596,6 +647,11 @@ unsigned long long BigInt::to_ULLONG()
 	return ans;
 }
 
+std::string BigInt::toString() const 
+{
+	return this->strRep;
+}
+
 void BigInt::printNumber() const
 {
 	if (this->sign == -1) {
@@ -603,16 +659,16 @@ void BigInt::printNumber() const
 	}
 	if (this->base < 10) {
 		for (unsigned int i = 0; i < this->getNumberOfDigits(); i++) {
-			std::cout << this->getDigits().at(i);
+			std::cout << this->getDigit(i);
 		}
 	}
 	else {
 		for (unsigned int i = 0; i < this->getNumberOfDigits(); i++) {
-			if (this->getDigits().at(i) < 10) {
-				std::cout << this->getDigits().at(i);
+			if (this->getDigit(i) < 10) {
+				std::cout << this->getDigit(i);
 			}
 			else {
-				char put = this->getDigits().at(i) - 10 + 'A';
+				char put = this->getDigit(i) - 10 + 'A';
 				std::cout << (put);
 			}
 		}
@@ -644,6 +700,14 @@ void BigInt::printNumber(const char* option) const
 		}
 		std::cout << s << std::endl;
 	}
+}
+
+void BigInt::printDigits() const
+{
+	for (auto a : this->digits) {
+		std::cout << a << " ";
+	}
+	std::cout << std::endl;
 }
 
 const short BigInt::compare(const BigInt& other) const //returns 0 when equal, -1 when this<other and 1 when this>other
