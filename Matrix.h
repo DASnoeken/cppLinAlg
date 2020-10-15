@@ -16,14 +16,20 @@ public:
 	const Matrix transpose();
 	const Matrix REF();
 	const double det();
+
+	//operators
 	const Matrix operator+(const Matrix& m);
 	const Matrix operator-(const Matrix& m);
 	const Matrix operator*(const Matrix& m);
 	const Matrix operator*(const double& scalar);
 
+	//accessors
 	const int getN_rows() const;
 	const int getN_columns() const;
 	const double getRrMult() const;
+
+	//friends
+	friend std::ostream& operator<<(std::ostream& os, const Matrix& m);
 private:
 	int n_rows, n_columns;
 	std::vector< std::vector<double> > rows;

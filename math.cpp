@@ -97,7 +97,6 @@ int main()
     catch (BigIntException& bie) {
         std::cout << "\033[1;31mError!" << " " << bie.getWhat() << "\033[0m" << std::endl;
     }
-    //std::cout << bibase16sum << "    " << bibase16diff << std::endl;
 }
 
 //Here is some stuff to find memory leaks

@@ -264,3 +264,15 @@ const double Matrix::getElement(int i, int j) const
 	}
 	return this->rows.at(i).at(j);
 }
+
+std::ostream& operator<<(std::ostream& os, const Matrix& m)
+{
+	for (int i = 0; i < m.getN_rows(); i++) {
+		for (int j = 0; j < m.n_columns; j++) {
+			os << std::left << std::setw(4) << m.rows.at(i).at(j) << " ";
+		}
+		os << "\n";
+	}
+	os << std::endl;
+	return os;
+}
