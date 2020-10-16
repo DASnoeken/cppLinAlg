@@ -3,20 +3,19 @@
 
 #include <charconv>
 #include <iostream>
-#include <memory>
-#include <cctype>
 
-const BigInt BigInt::SHORT_MAX_VAL = BigInt("32767");
-const BigInt BigInt::SHORT_MIN_VAL = BigInt("-32768");
+const BigInt BigInt::SHORT_MAX_VAL  = BigInt("32767");
+const BigInt BigInt::SHORT_MIN_VAL  = BigInt("-32768");
 const BigInt BigInt::USHORT_MAX_VAL = BigInt("65535");
-const BigInt BigInt::INT_MAX_VAL = BigInt("2147483647");
-const BigInt BigInt::INT_MIN_VAL = BigInt("-2147483648");
-const BigInt BigInt::UINT_MAX_VAL = BigInt("4294967295");
-const BigInt BigInt::LLONG_MAX_VAL = BigInt("9223372036854775807");
-const BigInt BigInt::LLONG_MIN_VAL = BigInt("-9223372036854775808");
+const BigInt BigInt::INT_MAX_VAL    = BigInt("2147483647");
+const BigInt BigInt::INT_MIN_VAL    = BigInt("-2147483648");
+const BigInt BigInt::UINT_MAX_VAL   = BigInt("4294967295");
+const BigInt BigInt::LLONG_MAX_VAL  = BigInt("9223372036854775807");
+const BigInt BigInt::LLONG_MIN_VAL  = BigInt("-9223372036854775808");
 const BigInt BigInt::ULLONG_MAX_VAL = BigInt("18446744073709551615");
+
 const BigInt BigInt::ZERO = BigInt();
-const BigInt BigInt::ONE = BigInt("1");
+const BigInt BigInt::ONE  = BigInt("1");
 
 BigInt::BigInt()	//Zero argument constructor, creates object with value 0.
 {
@@ -336,7 +335,7 @@ BigInt BigInt::operator+(const BigInt& bi)
 BigInt BigInt::operator-(const BigInt& bi)
 {
 	if (this->compare(bi) == 0) {
-		return BigInt("0");
+		return ZERO;
 	}
 	std::string answer;
 	std::vector<short> localDigits = this->digits;
@@ -496,7 +495,7 @@ BigInt BigInt::operator*(const BigInt& bi)
 
 BigInt BigInt::operator^(const BigInt& bi)
 {
-	BigInt ans("1");
+	BigInt ans(ONE);
 	for (unsigned long long i = 0; i < bi.to_ULLONG(); i = i + 1) {
 		ans = ans * *this;
 	}
