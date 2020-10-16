@@ -221,21 +221,10 @@ BigInt::BigInt(short inp)
 
 BigInt::BigInt(const BigInt& bi_old)
 {
-	std::cout<<"\033[1;31mCopy constructor\033[0m"<<std::endl;
-	std::string newInput = "";
 	this->base = bi_old.getBase();
 	this->sign = bi_old.getSign();
-	for (unsigned int i = 0; i < bi_old.digits.size(); i++) {
-		if (bi_old.getDigit(i) <= 9) {
-			newInput += std::to_string(bi_old.getDigit(i));
-		}
-		else {
-			char put = bi_old.getDigit(i) - 10 + 'A';
-			newInput += put;
-		}
-	}
-	std::string_view input(newInput);
 	this->strRep = bi_old.toString();
+	std::string_view input(this->strRep);
 	this->numberOfDigits = bi_old.getNumberOfDigits();
 	this->digits.reserve(this->numberOfDigits + 1);
 	for (unsigned int i = 0; i < this->numberOfDigits; i++) {
@@ -261,7 +250,6 @@ BigInt::BigInt(const BigInt& bi_old)
 
 BigInt::BigInt(BigInt&& bi_other) noexcept
 {
-	std::cout << "\033[1;32mMove Constructor\033[0m" << std::endl;
 	this->base = bi_other.getBase();
 	this->sign = bi_other.getSign();
 	this->digits = bi_other.getDigits();
@@ -269,7 +257,7 @@ BigInt::BigInt(BigInt&& bi_other) noexcept
 	this->strRep = bi_other.toString();
 	bi_other.digits.clear();
 	bi_other.numberOfDigits = 0;
-	bi_other.strRep = "";
+	bi_other.strRep.clear();
 	bi_other.base = 0;
 	bi_other.sign = 0;
 }
@@ -476,12 +464,11 @@ BigInt BigInt::operator*(const BigInt& bi)
 	else {
 		newSign = -1;
 	}
-	BigInt answer("0");
+	BigInt answer;
 	std::vector<short> otherDigits = bi.getDigits();
 	std::vector<short>::reverse_iterator riter = this->digits.rbegin();
 	std::vector<short>::reverse_iterator riterOther = otherDigits.rbegin();
 	std::vector<BigInt> nums(this->getNumberOfDigits() * bi.getNumberOfDigits());
-	//nums.resize(this->getNumberOfDigits() * bi.getNumberOfDigits());
 	short digit1, digit2, product;
 	int counter = 0;
 	std::string finNum;
@@ -501,8 +488,8 @@ BigInt BigInt::operator*(const BigInt& bi)
 		}
 		++riter;
 	}
-	for (auto bi : nums) {
-		answer = BigInt((BigInt&&)(answer + bi));
+	for (int i = 0; i < nums.size(); ++i) {
+		answer = BigInt((BigInt&&)(answer + nums.at(i)));
 	}
 	return answer;
 }
@@ -522,23 +509,23 @@ BigInt BigInt::operator/(const BigInt& bi)
 		BigIntException bie("Division by 0! At BigInt::operator/(const BigInt& bi)");
 		throw bie;
 	}
-	else if (this->equals(0)) {
-		return 0;
+	else if (this->equals(ZERO)) {
+		return ZERO;
 	}
-	else if (bi.equals(1)) {
+	else if (bi.equals(ONE)) {
 		return *this;
 	}
 	else if (bi.equals(*this)) {
-		return 1;
+		return ONE;
 	}
 	BigInt numerator = *this;
 	BigInt denominator = bi;
-	BigInt remainder = 0;
-	BigInt ans = 0;
+	BigInt remainder = ZERO;
+	BigInt ans = ZERO;
 	if (numerator.compare(denominator) > 0) {
 		while (numerator.compare(denominator) >= 0) {
 			numerator = numerator - denominator;
-			ans = ans + BigInt("1");
+			ans = ans + ONE;
 		}
 		remainder = numerator;
 	}
