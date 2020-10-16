@@ -3,18 +3,27 @@
 
 #include <charconv>
 #include <iostream>
-#include <regex>
+#include <memory>
 #include <cctype>
 
-const BigInt BigInt::SHORT_MAX_VAL  = BigInt("32767");
-const BigInt BigInt::SHORT_MIN_VAL  = BigInt("-32768");
+const BigInt BigInt::SHORT_MAX_VAL = BigInt("32767");
+const BigInt BigInt::SHORT_MIN_VAL = BigInt("-32768");
 const BigInt BigInt::USHORT_MAX_VAL = BigInt("65535");
-const BigInt BigInt::INT_MAX_VAL    = BigInt("2147483647");
-const BigInt BigInt::INT_MIN_VAL    = BigInt("-2147483648");
-const BigInt BigInt::UINT_MAX_VAL   = BigInt("4294967295");
-const BigInt BigInt::LLONG_MAX_VAL  = BigInt("9223372036854775807");
-const BigInt BigInt::LLONG_MIN_VAL  = BigInt("-9223372036854775808");
+const BigInt BigInt::INT_MAX_VAL = BigInt("2147483647");
+const BigInt BigInt::INT_MIN_VAL = BigInt("-2147483648");
+const BigInt BigInt::UINT_MAX_VAL = BigInt("4294967295");
+const BigInt BigInt::LLONG_MAX_VAL = BigInt("9223372036854775807");
+const BigInt BigInt::LLONG_MIN_VAL = BigInt("-9223372036854775808");
 const BigInt BigInt::ULLONG_MAX_VAL = BigInt("18446744073709551615");
+const BigInt BigInt::ZERO = BigInt();
+const BigInt BigInt::ONE = BigInt("1");
+
+BigInt::BigInt()	//Zero argument constructor, creates object with value 0.
+{
+	std::vector<short> s;
+	s.push_back(0);
+	this->base = 10; this->sign = 1; this->strRep = "0"; this->digits = s; this->numberOfDigits = 1;
+}
 
 BigInt::BigInt(const char* in)
 {
@@ -86,7 +95,7 @@ BigInt::BigInt(const char* in, short inbase)
 			if (s > this->base) {
 				std::string msg = "Invalid input for base! At BigInt::BigInt(const char* in, short inbase). Base = "
 					+ std::to_string(this->base)
-					+ ", but should be at least: "+std::to_string(s);
+					+ ", but should be at least: " + std::to_string(s);
 				BigIntException bie(msg.c_str());
 				throw bie;
 			}
@@ -212,6 +221,7 @@ BigInt::BigInt(short inp)
 
 BigInt::BigInt(const BigInt& bi_old)
 {
+	std::cout<<"\033[1;31mCopy constructor\033[0m"<<std::endl;
 	std::string newInput = "";
 	this->base = bi_old.getBase();
 	this->sign = bi_old.getSign();
@@ -249,9 +259,23 @@ BigInt::BigInt(const BigInt& bi_old)
 	}
 }
 
+BigInt::BigInt(BigInt&& bi_other) noexcept
+{
+	std::cout << "\033[1;32mMove Constructor\033[0m" << std::endl;
+	this->base = bi_other.getBase();
+	this->sign = bi_other.getSign();
+	this->digits = bi_other.getDigits();
+	this->numberOfDigits = bi_other.getNumberOfDigits();
+	this->strRep = bi_other.toString();
+	bi_other.digits.clear();
+	bi_other.numberOfDigits = 0;
+	bi_other.strRep = "";
+	bi_other.base = 0;
+	bi_other.sign = 0;
+}
+
 BigInt BigInt::operator+(const BigInt& bi)
 {
-	
 	int newsign = 1;
 	if (this->getSign() < 0 && bi.getSign() > 0) {
 		return BigInt(bi) - *this;
@@ -280,7 +304,7 @@ BigInt BigInt::operator+(const BigInt& bi)
 			char asciichar = (char)(sum - 10 + 'A');
 			if (sum > this->base) {
 				asciichar -= this->base;
-				
+
 				if (sum > this->base + 9) {
 					sumstring = asciichar;
 					sumstring = "1" + sumstring;
@@ -316,7 +340,7 @@ BigInt BigInt::operator+(const BigInt& bi)
 		answer = sumstring + answer;
 		++riterOther;
 	}
-	BigInt ans(answer.c_str(),this->base);
+	BigInt ans(answer.c_str(), this->base);
 	ans.setSign(newsign);
 	return ans;
 }
@@ -335,7 +359,7 @@ BigInt BigInt::operator-(const BigInt& bi)
 	unsigned int index;
 
 	if (this->compare(bi) > 0) {		//case answer will be positive
-		
+
 		newsign = 1;
 		while (riter != localDigits.rend() && riterOther != otherDigits.rend()) {
 			digit1 = *riter;
@@ -359,7 +383,7 @@ BigInt BigInt::operator-(const BigInt& bi)
 				}
 				else {
 					while (index >= 0 && localDigits.at(index) == 0) {
-						localDigits.at(index) = this->base-1;
+						localDigits.at(index) = this->base - 1;
 						index--;
 					}
 					localDigits.at(index)--;
@@ -436,13 +460,13 @@ BigInt BigInt::operator-(const BigInt& bi)
 
 BigInt BigInt::operator*(const BigInt& bi)
 {
-	if (bi.equals(BigInt("0")) || this->equals(BigInt("0"))) {	//first some special simple cases
-		return BigInt("0");
+	if (bi.equals(ZERO) || this->equals(ZERO)) {	//first some special simple cases
+		return ZERO;
 	}
-	if (bi.equals(BigInt("1"))) {
+	if (bi.equals(ONE)) {
 		return *this;
 	}
-	else if (this->equals(BigInt("1"))) {
+	else if (this->equals(ONE)) {
 		return bi;
 	}
 	int newSign;
@@ -456,8 +480,10 @@ BigInt BigInt::operator*(const BigInt& bi)
 	std::vector<short> otherDigits = bi.getDigits();
 	std::vector<short>::reverse_iterator riter = this->digits.rbegin();
 	std::vector<short>::reverse_iterator riterOther = otherDigits.rbegin();
-	std::vector<BigInt> nums; nums.reserve(this->getNumberOfDigits() * bi.getNumberOfDigits());
+	std::vector<BigInt> nums(this->getNumberOfDigits() * bi.getNumberOfDigits());
+	//nums.resize(this->getNumberOfDigits() * bi.getNumberOfDigits());
 	short digit1, digit2, product;
+	int counter = 0;
 	std::string finNum;
 	while (riter != digits.rend()) {
 		riterOther = otherDigits.rbegin();
@@ -466,16 +492,17 @@ BigInt BigInt::operator*(const BigInt& bi)
 			digit2 = *riterOther;
 			product = digit1 * digit2;
 			finNum += std::to_string(product);
-			nums.emplace_back(BigInt(finNum.c_str()).concatZeros((
-				riterOther - otherDigits.rbegin()) + (riter - digits.rbegin())
-			));
+			BigInt backplacer = (BigInt&&) BigInt(finNum.c_str()).concatZeros((
+				riterOther - otherDigits.rbegin()) + (riter - digits.rbegin()));
+			nums.at(counter) = backplacer;
 			++riterOther;
 			finNum = "";
+			++counter;
 		}
 		++riter;
 	}
 	for (auto bi : nums) {
-		answer = answer + bi;
+		answer = BigInt((BigInt&&)(answer + bi));
 	}
 	return answer;
 }
@@ -483,7 +510,7 @@ BigInt BigInt::operator*(const BigInt& bi)
 BigInt BigInt::operator^(const BigInt& bi)
 {
 	BigInt ans("1");
-	for (BigInt i("0"); i.compare(bi)<0; i = i + 1) {
+	for (unsigned long long i = 0; i < bi.to_ULLONG(); i = i + 1) {
 		ans = ans * *this;
 	}
 	return ans;
@@ -525,6 +552,16 @@ BigInt BigInt::operator/(const BigInt& bi)
 	return ans;
 }
 
+BigInt& BigInt::operator=(const BigInt& bi_other)
+{
+	this->base = bi_other.getBase();
+	this->sign = bi_other.getSign();
+	this->digits = bi_other.getDigits();
+	this->numberOfDigits = bi_other.getNumberOfDigits();
+	this->strRep = bi_other.toString();
+	return *this;
+}
+
 void BigInt::setDigit(unsigned int& index, short val)
 {
 	if (val > this->base - 1 || val < 0) {
@@ -539,10 +576,10 @@ void BigInt::setSign(short sign)
 	this->sign = sign;
 }
 
-short BigInt::to_SHORT()
+short BigInt::to_SHORT() const
 {
 	if (this->compare(SHORT_MAX_VAL) == 1 || this->compare(SHORT_MIN_VAL) == -1) {
-		std::string msg = std::string("Number out of bounds for SHORT! Minimum value = -32768\nMax allowed value = 32767\nYou entered: ") 
+		std::string msg = std::string("Number out of bounds for SHORT! Minimum value = -32768\nMax allowed value = 32767\nYou entered: ")
 			+ this->toString()
 			+ std::string(".\n At BigInt::to_SHORT().");
 		BigIntException bie(msg.c_str());
@@ -557,7 +594,7 @@ short BigInt::to_SHORT()
 	return ans;
 }
 
-unsigned short BigInt::to_USHORT()
+unsigned short BigInt::to_USHORT() const
 {
 	if (this->getSign() < 0 || this->compare(USHORT_MAX_VAL) == 1) {
 		std::string msg = std::string("Number out of bounds for USHORT! Minimum value = 0\nMax allowed value = 65535\nYou entered: ")
@@ -569,16 +606,16 @@ unsigned short BigInt::to_USHORT()
 	unsigned short ans = 0;
 	unsigned short tens = 1;
 	for (int i = this->getNumberOfDigits() - 1; i >= 0; --i) {
-		ans += ((unsigned short) this->getDigit(i) * tens);
+		ans += ((unsigned short)this->getDigit(i) * tens);
 		tens *= 10;
 	}
 	return ans;
 }
 
-long long BigInt::to_LLONG()
+long long BigInt::to_LLONG() const
 {
 	if (this->compare(LLONG_MAX_VAL) == 1 || this->compare(LLONG_MIN_VAL) == -1) {
-		std::string msg = std::string("Number out of bounds for LLONG! Minimum value = "+LLONG_MIN_VAL.toString()+"\nMax allowed value = "+LLONG_MAX_VAL.toString()+"\nYou entered: ")
+		std::string msg = std::string("Number out of bounds for LLONG! Minimum value = " + LLONG_MIN_VAL.toString() + "\nMax allowed value = " + LLONG_MAX_VAL.toString() + "\nYou entered: ")
 			+ this->toString()
 			+ std::string(".\n At BigInt::to_LLONG().");
 		BigIntException bie(msg.c_str());
@@ -593,7 +630,7 @@ long long BigInt::to_LLONG()
 	return ans;
 }
 
-int BigInt::to_INT()
+int BigInt::to_INT() const
 {
 	if (this->compare(INT_MAX_VAL) == 1 || this->compare(INT_MIN_VAL) == -1) {
 		std::string msg = std::string("Number out of bounds for INT! Minimum value = " + INT_MIN_VAL.toString() + "\nMax allowed value = " + INT_MAX_VAL.toString() + "\nYou entered: ")
@@ -611,7 +648,7 @@ int BigInt::to_INT()
 	return ans;
 }
 
-unsigned int BigInt::to_UINT()
+unsigned int BigInt::to_UINT() const
 {
 	if (this->getSign() < 0 || this->compare(UINT_MAX_VAL) == 1) {
 		std::string msg = std::string("Number out of bounds for UINT! Minimum value = 0\nMax allowed value = " + UINT_MAX_VAL.toString() + "\nYou entered: ")
@@ -629,7 +666,7 @@ unsigned int BigInt::to_UINT()
 	return ans;
 }
 
-unsigned long long BigInt::to_ULLONG()
+unsigned long long BigInt::to_ULLONG() const
 {
 	if (this->getSign() < 0 || this->compare(ULLONG_MAX_VAL) == 1) {
 		std::string msg = std::string("Number out of bounds for ULLONG! Minimum value = 0\nMax allowed value = " + ULLONG_MAX_VAL.toString() + "\nYou entered: ")
@@ -647,7 +684,7 @@ unsigned long long BigInt::to_ULLONG()
 	return ans;
 }
 
-std::string BigInt::toString() const 
+std::string BigInt::toString() const
 {
 	return this->strRep;
 }
@@ -692,7 +729,7 @@ void BigInt::printNumber(const char* option) const
 			std::cout << "-";
 		}
 		std::string s = "";
-		for (int i = this->getNumberOfDigits() - 1; i >= 0 ; i--) {
+		for (int i = this->getNumberOfDigits() - 1; i >= 0; i--) {
 			s = std::to_string(this->getDigits().at(i)) + s;
 			if (i % 3 == 0 && i != 0) {
 				s = " " + s;
@@ -797,47 +834,47 @@ const short BigInt::getBase() const
 	return this->base;
 }
 
-const BigInt BigInt::get_SHORT_MAX() const
+const BigInt& BigInt::get_SHORT_MAX() const
 {
 	return SHORT_MAX_VAL;
 }
 
-const BigInt BigInt::get_SHORT_MIN() const
+const BigInt& BigInt::get_SHORT_MIN() const
 {
 	return SHORT_MIN_VAL;
 }
 
-const BigInt BigInt::get_USHORT_MAX() const
+const BigInt& BigInt::get_USHORT_MAX() const
 {
 	return USHORT_MAX_VAL;
 }
 
-const BigInt BigInt::get_INT_MAX() const
+const BigInt& BigInt::get_INT_MAX() const
 {
 	return INT_MAX_VAL;
 }
 
-const BigInt BigInt::get_INT_MIN() const
+const BigInt& BigInt::get_INT_MIN() const
 {
 	return INT_MIN_VAL;
 }
 
-const BigInt BigInt::get_UINT_MAX() const
+const BigInt& BigInt::get_UINT_MAX() const
 {
 	return UINT_MAX_VAL;
 }
 
-const BigInt BigInt::get_LLONG_MAX() const
+const BigInt& BigInt::get_LLONG_MAX() const
 {
 	return LLONG_MAX_VAL;
 }
 
-const BigInt BigInt::get_LLONG_MIN() const
+const BigInt& BigInt::get_LLONG_MIN() const
 {
 	return LLONG_MIN_VAL;
 }
 
-const BigInt BigInt::get_ULLONG_MAX() const
+const BigInt& BigInt::get_ULLONG_MAX() const
 {
 	return ULLONG_MAX_VAL;
 }

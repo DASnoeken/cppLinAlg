@@ -52,16 +52,19 @@ int main()
         BigInt bi2 = bi + i;
         bi2.printNumber();
         bi.get_INT_MAX().printNumber();
+
+
         std::cout << "\n\nTesting operator*" << std::endl;
         BigInt bis("12");
         BigInt bis2("11");
         BigInt bisans = bis * bis2;
         bisans.printNumber();
+        
 
         std::cout << "\n\nTesting operator^" << std::endl;
         BigInt bip("3");
         BigInt bip2("4");
-        BigInt bipans = bip ^ bip2;
+        BigInt bipans = (bip ^ bip2);
         std::cout << (3 * 3 * 3 * 3) << " = " << bipans << std::endl;
         std::cout << "Some BigInt: " << BigInt("319208385719841092417498324") << std::endl;
         long long lb = bipans.to_LLONG();
@@ -93,6 +96,7 @@ int main()
         BigInt bibase16sum = (bibase16 + bibase16);
         bibase16sum.printDigits();
         std::cout << bibase16sum << std::endl;
+        
     }
     catch (BigIntException& bie) {
         std::cout << "\033[1;31mError!" << " " << bie.getWhat() << "\033[0m" << std::endl;
