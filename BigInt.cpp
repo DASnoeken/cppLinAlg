@@ -3,6 +3,7 @@
 
 #include <charconv>
 #include <iostream>
+#include <array>
 
 const BigInt BigInt::SHORT_MAX_VAL  = BigInt("32767");
 const BigInt BigInt::SHORT_MIN_VAL  = BigInt("-32768");
@@ -309,10 +310,9 @@ BigInt BigInt::operator+(const BigInt& bi)
 
 		if (sum < this->base) {
 			answer = sumstring + answer;
-			carry = 0;
 		}
 		else {
-			sumstring = std::to_string(sum);
+			std::string sumstring = std::to_string(sum);
 			std::string_view sv(sumstring);
 			carry = 1;
 			answer = sv.at(1) + answer;
