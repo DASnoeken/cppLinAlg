@@ -51,6 +51,9 @@ public:
 	unsigned long long to_ULLONG() const;
 	std::string toString() const;
 
+	//Math
+	static BigInt factorial(const BigInt& bi);
+
 	//Other functions
 	void printNumber() const;
 	void printNumber(const char* option) const;

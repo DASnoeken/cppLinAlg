@@ -220,6 +220,7 @@ BigInt::BigInt(short inp)
 
 BigInt::BigInt(const BigInt& bi_old)
 {
+	//std::cout << "\033[1;31mCopy constructor\033[0m" << std::endl;
 	this->base = bi_old.getBase();
 	this->sign = bi_old.getSign();
 	this->strRep = bi_old.toString();
@@ -249,6 +250,7 @@ BigInt::BigInt(const BigInt& bi_old)
 
 BigInt::BigInt(BigInt&& bi_other) noexcept
 {
+	//std::cout << "\033[1;32mMove Constructor\033[0m" << std::endl;
 	this->base = bi_other.getBase();
 	this->sign = bi_other.getSign();
 	this->digits = bi_other.getDigits();
@@ -287,7 +289,7 @@ BigInt BigInt::operator+(const BigInt& bi)
 		if (sum < 10) {
 			sumstring = std::to_string(sum);
 		}
-		else {
+		else if (this->base > 10) {
 			char asciichar = (char)(sum - 10 + 'A');
 			if (sum > this->base) {
 				asciichar -= this->base;
@@ -310,6 +312,7 @@ BigInt BigInt::operator+(const BigInt& bi)
 			carry = 0;
 		}
 		else {
+			sumstring = std::to_string(sum);
 			std::string_view sv(sumstring);
 			carry = 1;
 			answer = sv.at(1) + answer;
@@ -318,14 +321,25 @@ BigInt BigInt::operator+(const BigInt& bi)
 		++riterOther;
 	}
 	while (riter != this->digits.rend()) {		//leftover numbers
+		if (carry != 0) {
+			*riter += carry;
+			carry = 0;
+		}
 		std::string sumstring = std::to_string(*riter);
 		answer = sumstring + answer;
 		++riter;
 	}
 	while (riterOther != otherDigits.rend()) {
+		if (carry != 0) {
+			*riterOther += carry;
+			carry = 0;
+		}
 		std::string sumstring = std::to_string(*riterOther);
 		answer = sumstring + answer;
 		++riterOther;
+	}
+	if (carry != 0) {
+		answer = std::to_string(carry) + answer;
 	}
 	BigInt ans(answer.c_str(), this->base);
 	ans.setSign(newsign);
@@ -487,7 +501,7 @@ BigInt BigInt::operator*(const BigInt& bi)
 		}
 		++riter;
 	}
-	for (int i = 0; i < nums.size(); ++i) {
+	for (unsigned int i = 0; i < nums.size(); ++i) {
 		answer = BigInt((BigInt&&)(answer + nums.at(i)));
 	}
 	return answer;
@@ -673,6 +687,17 @@ unsigned long long BigInt::to_ULLONG() const
 std::string BigInt::toString() const
 {
 	return this->strRep;
+}
+
+BigInt BigInt::factorial(const BigInt& bi)
+{
+	BigInt bif = ONE;
+	for (BigInt i = bi; i.compare(ONE) == 1; i = i - 1) {
+		bif = bif * i;
+		//std::cout << "bif = " << bif << " -- i = " << i << std::endl;
+	}
+	//std::cout << "\033[1;31mWARNING! DEBUG!\033[0m" << std::endl;
+	return bif;
 }
 
 void BigInt::printNumber() const

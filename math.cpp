@@ -97,6 +97,12 @@ int main()
         bibase16sum.printDigits();
         std::cout << bibase16sum << std::endl;
         
+        std::cout << "\nTesting factorial" << std::endl;
+        BigInt biFactorial = BigInt::factorial(BigInt(10));
+        std::cout << "10! = " << biFactorial << std::endl;
+        std::cout << "12! = " << BigInt::factorial(12) << std::endl;
+        std::cout << "20! = " << BigInt::factorial(20) << std::endl;
+        std::cout << "100! = " << BigInt::factorial(100) << std::endl;
     }
     catch (BigIntException& bie) {
         std::cout << "\033[1;31mError!" << " " << bie.getWhat() << "\033[0m" << std::endl;
