@@ -585,6 +585,26 @@ bool BigInt::operator>(const BigInt& bi)
 	}
 }
 
+bool BigInt::operator<=(const BigInt& bi)
+{
+	if (this->compare(bi) <= 0) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool BigInt::operator>=(const BigInt& bi)
+{
+	if (this->compare(bi) >= 0) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
 bool BigInt::operator==(const BigInt& bi)
 {
 	if (this->compare(bi) == 0) {

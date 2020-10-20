@@ -23,6 +23,8 @@ public:
 	BigInt& operator=(const BigInt& bi_other);
 	bool operator<(const BigInt& bi);
 	bool operator>(const BigInt& bi);
+	bool operator<=(const BigInt& bi);
+	bool operator>=(const BigInt& bi);
 	bool operator==(const BigInt& bi);
 
 	//Accessors
