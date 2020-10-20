@@ -61,7 +61,6 @@ int main()
         BigInt bisans = bis * bis2;
         std::cout << bis << " * " << bis2 << " = " << bisans << std::endl;
         
-
         std::cout << "\n\nTesting operator^" << std::endl;
         BigInt bip("3");
         BigInt bip2("4");

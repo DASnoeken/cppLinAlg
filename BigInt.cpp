@@ -565,6 +565,36 @@ BigInt& BigInt::operator=(const BigInt& bi_other)
 	return *this;
 }
 
+bool BigInt::operator<(const BigInt& bi)
+{
+	if (this->compare(bi) < 0) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool BigInt::operator>(const BigInt& bi)
+{
+	if (this->compare(bi) > 0) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool BigInt::operator==(const BigInt& bi)
+{
+	if (this->compare(bi) == 0) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
 void BigInt::setDigit(unsigned int& index, short val)
 {
 	if (val > this->base - 1 || val < 0) {

@@ -21,6 +21,9 @@ public:
 	BigInt operator^(const BigInt& bi);
 	BigInt operator/(const BigInt& bi);
 	BigInt& operator=(const BigInt& bi_other);
+	bool operator<(const BigInt& bi);
+	bool operator>(const BigInt& bi);
+	bool operator==(const BigInt& bi);
 
 	//Accessors
 	const unsigned int getNumberOfDigits() const;
