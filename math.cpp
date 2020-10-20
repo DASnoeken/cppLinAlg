@@ -6,7 +6,7 @@
 
 int main()
 {
-    const char* input = "1,2,3;4,5,6;7,8,93";
+    /*const char* input = "1,2,3;4,5,6;7,8,93";
     Matrix m(input);
     const char* input2 = "1,1,1;2,2,2;3,3,3";
     Matrix m2(input2);
@@ -43,6 +43,7 @@ int main()
     catch (MatrixException me) {
         std::cout << me << "Exception caught!" << std::endl;
     }
+    */
     try {
         std::cout << "Test BigInt class" << std::endl;
         const char* biIn = "7894561315345548498498615615164897894841321312565498789784655465135111303110123151301051354848948351132135157984561231";
@@ -58,7 +59,7 @@ int main()
         BigInt bis("12");
         BigInt bis2("11");
         BigInt bisans = bis * bis2;
-        bisans.printNumber();
+        std::cout << bis << " * " << bis2 << " = " << bisans << std::endl;
         
 
         std::cout << "\n\nTesting operator^" << std::endl;
@@ -90,6 +91,7 @@ int main()
         std::cout << "Actual 12/13 = " << 12 / 13 << std::endl;
         std::cout << "12/13 = " << bidans2 << std::endl;
         std::cout << "\nOther bases test" << std::endl;
+        
 
         BigInt bibase16("1234ABCDEF313", (short)16);
         std::cout << "bibase16 = " << bibase16 << std::endl;
@@ -102,7 +104,9 @@ int main()
         std::cout << "10! = " << biFactorial << std::endl;
         std::cout << "12! = " << BigInt::factorial(12) << std::endl;
         std::cout << "20! = " << BigInt::factorial(20) << std::endl;
-        std::cout << "100! = " << BigInt::factorial(100) << std::endl;
+
+        std::cout << "12+13 = " << BigInt(12) + BigInt(13) << std::endl;
+        
     }
     catch (BigIntException& bie) {
         std::cout << "\033[1;31mError!" << " " << bie.getWhat() << "\033[0m" << std::endl;

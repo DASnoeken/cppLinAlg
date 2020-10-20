@@ -268,10 +268,14 @@ BigInt BigInt::operator+(const BigInt& bi)
 {
 	int newsign = 1;
 	if (this->getSign() < 0 && bi.getSign() > 0) {
-		return BigInt(bi) - *this;
+		BigInt tmp = *this;
+		tmp.setSign(1);
+		return BigInt((BigInt&&)(BigInt(bi) - tmp));
 	}
 	else if (this->getSign() > 0 && bi.getSign() < 0) {
-		return *this - BigInt(bi);
+		BigInt tmp = bi;
+		tmp.setSign(1);
+		return BigInt((BigInt&&)(*this - tmp));
 	}
 	else if (this->getSign() < 0 && bi.getSign() < 0) {
 		newsign = -1;
@@ -286,15 +290,15 @@ BigInt BigInt::operator+(const BigInt& bi)
 		digit1 = *riter;
 		digit2 = *riterOther;
 		sum = digit1 + digit2 + carry;
+		carry = 0;								//Reset carry after using
 		std::string sumstring;
 		if (sum < 10) {
 			sumstring = std::to_string(sum);
 		}
-		else if (this->base > 10) {
+		else if(this->base > 10) {
 			char asciichar = (char)(sum - 10 + 'A');
 			if (sum > this->base) {
 				asciichar -= this->base;
-
 				if (sum > this->base + 9) {
 					sumstring = asciichar;
 					sumstring = "1" + sumstring;
@@ -307,14 +311,15 @@ BigInt BigInt::operator+(const BigInt& bi)
 				sumstring = asciichar;
 			}
 		}
-
+		else {
+			sumstring = std::to_string(sum);
+		}
 		if (sum < this->base) {
 			answer = sumstring + answer;
 		}
 		else {
-			std::string sumstring = std::to_string(sum);
 			std::string_view sv(sumstring);
-			carry = 1;
+			carry = sv.at(0) - '0'; //1
 			answer = sv.at(1) + answer;
 		}
 		++riter;
@@ -358,9 +363,7 @@ BigInt BigInt::operator-(const BigInt& bi)
 	std::vector<short>::reverse_iterator riterOther = otherDigits.rbegin();
 	short digit1, digit2, diff, newsign;
 	unsigned int index;
-
 	if (this->compare(bi) > 0) {		//case answer will be positive
-
 		newsign = 1;
 		while (riter != localDigits.rend() && riterOther != otherDigits.rend()) {
 			digit1 = *riter;
